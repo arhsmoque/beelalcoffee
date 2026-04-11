@@ -909,11 +909,18 @@ let cartUid     = 0;
 let sizePending = null;
 
 // ════════════════════════════════════════════════════════════
-// FIREBASE HELPERS
+// FIREBASE HELPERS WITH TIMEOUT & PARALLEL FETCHING
 // ════════════════════════════════════════════════════════════
+function fetchWithTimeout(url, ms = 5000) {
+  return Promise.race([
+    fetch(url),
+    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
+  ]);
+}
+
 async function fbGet(path) {
   try {
-    const r = await fetch(`${FB_URL}/${FB_ROOT}/${path}.json`);
+    const r = await fetchWithTimeout(`${FB_URL}/${FB_ROOT}/${path}.json`);
     return await r.json();
   } catch { return null; }
 }
@@ -928,42 +935,39 @@ async function fbSet(path, data) {
 }
 
 // ════════════════════════════════════════════════════════════
-// INIT
+// INIT — fixed to never hang
 // ════════════════════════════════════════════════════════════
 async function init() {
-  // Load config
-  let cfg = await fbGet('config/store');
+  // Safety net: force-hide loader after 8 seconds no matter what
+  const loaderTimeout = setTimeout(() => {
+    document.getElementById('loader').classList.add('hidden');
+  }, 8000);
+
+  // Fetch config + menu in parallel instead of sequentially
+  const [cfg, theme, items, cats] = await Promise.all([
+    fbGet('config/store'),
+    fbGet('config/theme'),
+    fbGet('menu/items'),
+    fbGet('menu/categories')
+  ]);
+
   storeConfig = cfg ? { ...DEFAULT_CONFIG.store, ...cfg } : { ...DEFAULT_CONFIG.store };
-
-  let theme = await fbGet('config/theme');
   applyTheme(theme || DEFAULT_CONFIG.theme);
-
-  // Load menu
-  let items = await fbGet('menu/items');
-  let cats  = await fbGet('menu/categories');
   menuData = {
     categories: cats || DEFAULT_MENU.categories,
     items: items ? Object.values(items) : DEFAULT_MENU.items
   };
 
-  // Seed Firebase if empty
-  if (!cfg) await fbSet('config/store', DEFAULT_CONFIG.store);
-  if (!theme) await fbSet('config/theme', DEFAULT_CONFIG.theme);
-  if (!items) {
-    const obj = {};
-    DEFAULT_MENU.items.forEach(i => obj[i.id] = i);
-    await fbSet('menu/items', obj);
-  }
-  if (!cats) {
-    const obj = {};
-    DEFAULT_MENU.categories.forEach(c => obj[c.id] = c);
-    await fbSet('menu/categories', obj);
-  }
+  // Seed Firebase if empty (fire-and-forget, don't await)
+  if (!cfg)    fbSet('config/store', DEFAULT_CONFIG.store);
+  if (!theme)  fbSet('config/theme', DEFAULT_CONFIG.theme);
+  if (!items) { const obj = {}; DEFAULT_MENU.items.forEach(i => obj[i.id] = i); fbSet('menu/items', obj); }
+  if (!cats)  { const obj = {}; DEFAULT_MENU.categories.forEach(c => obj[c.id] = c); fbSet('menu/categories', obj); }
 
   renderHeader();
   renderMenu();
 
-  // Hide loader
+  clearTimeout(loaderTimeout);
   document.getElementById('loader').classList.add('hidden');
 }
 
