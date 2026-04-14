@@ -1634,13 +1634,21 @@ async function testKey() {
     const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method:'POST',
       headers:{'Authorization':`Bearer ${k}`,'Content-Type':'application/json'},
-      body: JSON.stringify({ model: orModel, messages:[{role:'user',content:'Reply: OK'}], max_tokens:5 })
+      body: JSON.stringify({ model: orModel, messages:[{role:'user',content:'Say: OK'}], max_tokens:10 })
     });
     const d = await r.json();
-    if (d.error) throw new Error(d.error.message);
-    const txt = d.choices?.[0]?.message?.content || '';
-    status.textContent = txt ? `✓ ${orModel} responding — key valid` : '⚠ Unexpected response';
-    status.className = txt ? 'key-status ok' : 'key-status';
+    if (d.error) throw new Error(`[${d.error.code || r.status}] ${d.error.message}`);
+    const choice = d.choices?.[0];
+    const txt = choice?.message?.content?.trim() || '';
+    if (txt) {
+      status.textContent = `✓ ${orModel} — key valid`;
+      status.className = 'key-status ok';
+    } else {
+      const reason = choice?.finish_reason || 'no choices returned';
+      logError({ type:'testKey_empty_response', model: orModel, http_status: r.status, finish_reason: reason, raw: JSON.stringify(d).slice(0, 500) });
+      status.textContent = `⚠ Empty response — finish: ${reason} — see Error Log`;
+      status.className = 'key-status err';
+    }
   }, 'testKey');
 }
 
