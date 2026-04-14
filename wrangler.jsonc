@@ -1,5 +1,4 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
   "name": "beelalcoffeev0",
   "compatibility_date": "2026-04-14",
   "observability": {
@@ -7,8 +6,5 @@
   },
   "assets": {
     "directory": "."
-  },
-  "compatibility_flags": [
-    "nodejs_compat"
-  ]
+  }
 }
