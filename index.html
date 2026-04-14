@@ -954,7 +954,7 @@ async function init() {
   storeConfig = cfg ? { ...DEFAULT_CONFIG.store, ...cfg } : { ...DEFAULT_CONFIG.store };
   applyTheme(theme || DEFAULT_CONFIG.theme);
   menuData = {
-    categories: cats || DEFAULT_MENU.categories,
+    categories: cats ? Object.values(cats) : DEFAULT_MENU.categories,
     items: items ? Object.values(items) : DEFAULT_MENU.items
   };
 
@@ -1110,10 +1110,18 @@ function renderMenu() {
         apps.forEach(i => l.appendChild(makeCard(i))); sec.appendChild(l);
       }
       // Addons note
-      sec.innerHTML += `
-        <div class="subsection-title">Add-ons</div>
-        <div class="addon-row"><span>Extra Double Shot</span><span class="addon-price">+RM4</span></div>
-        <div class="addon-row"><span>Extra Cheese</span><span class="addon-price">+RM2</span></div>`;
+      const addonsTitle = document.createElement('div');
+      addonsTitle.className = 'subsection-title';
+      addonsTitle.textContent = 'Add-ons';
+      sec.appendChild(addonsTitle);
+      const addonRow1 = document.createElement('div');
+      addonRow1.className = 'addon-row';
+      addonRow1.innerHTML = '<span>Extra Double Shot</span><span class="addon-price">+RM4</span>';
+      sec.appendChild(addonRow1);
+      const addonRow2 = document.createElement('div');
+      addonRow2.className = 'addon-row';
+      addonRow2.innerHTML = '<span>Extra Cheese</span><span class="addon-price">+RM2</span>';
+      sec.appendChild(addonRow2);
     } else {
       sec.innerHTML = `<div class="section-label">${cat.emoji} ${cat.label}</div>
         <div class="section-title">${cat.label}</div>`;
@@ -1131,7 +1139,7 @@ function renderMenu() {
 }
 
 function makeCard(item) {
-  const isDrink = item.hot !== null || item.cold !== null || item.frappe !== null;
+  const isDrink = item.hot != null || item.cold != null || item.frappe != null;
   const qty = cartQty(item.id);
   const card = document.createElement('div');
   card.className = 'menu-card' + (item.avail === false ? ' unavailable' : '') + (qty > 0 ? ' has-items' : '');
@@ -1210,7 +1218,7 @@ function handleAdd(e, itemId) {
   e.stopPropagation();
   const item = menuData.items.find(i => i.id === itemId);
   if (!item) return;
-  const isDrink = item.hot !== null || item.cold !== null || item.frappe !== null;
+  const isDrink = item.hot != null || item.cold != null || item.frappe != null;
   if (isDrink) {
     const sizes = [];
     if (item.hot    != null) sizes.push({ label:'Hot',    oz:'8oz',  price: item.hot });

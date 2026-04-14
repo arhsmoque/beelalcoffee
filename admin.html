@@ -583,9 +583,18 @@ async function safe(fn, ctx) {
 // ════════════════════════════════════════════════════════════
 // FIREBASE HELPERS
 // ════════════════════════════════════════════════════════════
+function fetchWithTimeout(url, ms = 5000) {
+  return Promise.race([
+    fetch(url),
+    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
+  ]);
+}
+
 async function fbGet(path) {
-  const r = await fetch(`${FB_URL}/${FB_ROOT}/${path}.json`);
-  return await r.json();
+  try {
+    const r = await fetchWithTimeout(`${FB_URL}/${FB_ROOT}/${path}.json`);
+    return await r.json();
+  } catch { return null; }
 }
 async function fbSet(path, data) {
   await fetch(`${FB_URL}/${FB_ROOT}/${path}.json`, { method:'PUT', body:JSON.stringify(data) });
