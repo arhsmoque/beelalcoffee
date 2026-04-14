@@ -1485,12 +1485,13 @@ async function sendChat() {
     const context   = await buildContext();
 
     const messages = [
-      { role:'user', content: context + '\n\n---\n' + msg }
+      { role:'system', content: sysPrompt },
+      { role:'user',   content: context + '\n\n---\n' + msg }
     ];
     // Inject last 6 turns of chat history as context
     const recentHistory = chatHistory.slice(-7, -1);
     if (recentHistory.length) {
-      messages.unshift(...recentHistory.map(h => ({
+      messages.splice(1, 0, ...recentHistory.map(h => ({
         role: h.role === 'user' ? 'user' : 'assistant',
         content: h.content
       })));
@@ -1501,11 +1502,9 @@ async function sendChat() {
       headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: orModel,
-        system: sysPrompt,
         messages,
         max_tokens: 600,
-        temperature: 0.3,
-        response_format: { type: 'json_object' }
+        temperature: 0.3
       })
     });
 
@@ -1634,7 +1633,7 @@ async function testKey() {
     const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method:'POST',
       headers:{'Authorization':`Bearer ${k}`,'Content-Type':'application/json'},
-      body: JSON.stringify({ model: orModel, messages:[{role:'user',content:'Say: OK'}], max_tokens:10 })
+      body: JSON.stringify({ model: orModel, messages:[{role:'user',content:'Say: OK'}], max_tokens:30 })
     });
     const d = await r.json();
     if (d.error) throw new Error(`[${d.error.code || r.status}] ${d.error.message}`);
