@@ -221,6 +221,8 @@ input[type=color]{width:32px;height:32px;border:none;border-radius:6px;cursor:po
 .key-status{font-size:12px;font-style:italic;color:var(--text2);margin-top:6px;min-height:18px;}
 .key-status.ok{color:var(--green);}
 .key-status.err{color:var(--red2);}
+.model-select{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);padding:10px 12px;font-family:var(--fb);font-size:12px;color:var(--text);outline:none;appearance:none;-webkit-appearance:none;}
+.model-select:focus{border-color:var(--gold);}
 
 /* ── MODAL ───────────────────────────────────────────── */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:800;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity 0.2s;}
@@ -495,6 +497,21 @@ input[type=color]{width:32px;height:32px;border:none;border-radius:6px;cursor:po
     </div>
 
     <div class="dev-section">
+      <div class="dev-title">AI Model</div>
+      <div class="a-card">
+        <div style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.6">Fetches free models live from OpenRouter. Save API key first, then tap Fetch.</div>
+        <div class="api-key-row">
+          <select class="model-select" id="modelSelect">
+            <option value="">— tap Fetch to load models —</option>
+          </select>
+          <button class="btn btn-secondary btn-sm" onclick="fetchModels()">Fetch</button>
+        </div>
+        <div class="key-status" id="modelStatus"></div>
+        <button class="btn btn-primary" onclick="saveModel()" style="margin-top:10px">Save Model</button>
+      </div>
+    </div>
+
+    <div class="dev-section">
       <div class="dev-title">System Prompt</div>
       <div class="a-card">
         <div style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.6">Injected before every Gemini request. Edit to fine-tune behaviour, persona, and ambiguity rules.</div>
@@ -687,6 +704,7 @@ let menuItems     = [];
 let menuCats      = [];
 let storeData     = {};
 let chatHistory   = [];   // { role, content, ts }
+let orModel       = 'google/gemma-4-26b-it:free'; // active model, updated from Firebase
 let extractedFonts  = null;
 let extractedPalette = [];
 let fontChoices   = {};   // { targetId: 'current' | 'template' }
@@ -1482,7 +1500,7 @@ async function sendChat() {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'google/gemini-2.0-flash-exp:free',
+        model: orModel,
         system: sysPrompt,
         messages,
         max_tokens: 600,
@@ -1564,6 +1582,22 @@ async function loadDevTab() {
     const key = await fbGet('config/dev/or_key');
     if (key) document.getElementById('orKey').value = key;
 
+    // Saved model
+    const savedModel = await fbGet('config/dev/or_model');
+    if (savedModel) {
+      orModel = savedModel;
+      const sel = document.getElementById('modelSelect');
+      let opt = sel.querySelector(`option[value="${savedModel}"]`);
+      if (!opt) {
+        opt = document.createElement('option');
+        opt.value = savedModel;
+        opt.textContent = savedModel;
+        sel.appendChild(opt);
+      }
+      opt.selected = true;
+      document.getElementById('modelStatus').textContent = `Current: ${savedModel}`;
+    }
+
     // System prompt
     const sp = await fbGet('config/dev/sys_prompt');
     document.getElementById('sysPromptInput').value = sp || DEFAULT_SYS_PROMPT;
@@ -1600,12 +1634,12 @@ async function testKey() {
     const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method:'POST',
       headers:{'Authorization':`Bearer ${k}`,'Content-Type':'application/json'},
-      body: JSON.stringify({ model:'google/gemini-2.0-flash-exp:free', messages:[{role:'user',content:'Reply: OK'}], max_tokens:5 })
+      body: JSON.stringify({ model: orModel, messages:[{role:'user',content:'Reply: OK'}], max_tokens:5 })
     });
     const d = await r.json();
     if (d.error) throw new Error(d.error.message);
     const txt = d.choices?.[0]?.message?.content || '';
-    status.textContent = txt ? '✓ Gemini responding — key valid' : '⚠ Unexpected response';
+    status.textContent = txt ? `✓ ${orModel} responding — key valid` : '⚠ Unexpected response';
     status.className = txt ? 'key-status ok' : 'key-status';
   }, 'testKey');
 }
@@ -1617,6 +1651,51 @@ async function saveKey() {
     await fbSet('config/dev/or_key', k);
     toast('API key saved ✓');
   }, 'saveKey');
+}
+
+async function fetchModels() {
+  const k = document.getElementById('orKey').value.trim();
+  const status = document.getElementById('modelStatus');
+  if (!k) { toast('Save API key first'); return; }
+  status.textContent = 'Fetching models...';
+  status.className = 'key-status';
+  await safe(async () => {
+    const r = await fetchWithTimeout('https://openrouter.ai/api/v1/models', 8000);
+    const data = await r.json();
+    const free = (data.data || []).filter(m =>
+      m.pricing?.prompt === '0' && m.pricing?.completion === '0'
+    ).sort((a, b) => a.name.localeCompare(b.name));
+
+    const sel = document.getElementById('modelSelect');
+    const current = orModel;
+    sel.innerHTML = '';
+    if (!free.length) {
+      sel.innerHTML = '<option value="">No free models found</option>';
+      status.textContent = 'No free models available';
+      return;
+    }
+    free.forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m.id;
+      opt.textContent = m.name;
+      if (m.id === current) opt.selected = true;
+      sel.appendChild(opt);
+    });
+    status.textContent = `✓ ${free.length} free models loaded`;
+    status.className = 'key-status ok';
+  }, 'fetchModels');
+}
+
+async function saveModel() {
+  const sel = document.getElementById('modelSelect');
+  const m = sel.value;
+  if (!m) { toast('Select a model first'); return; }
+  await safe(async () => {
+    await fbSet('config/dev/or_model', m);
+    orModel = m;
+    document.getElementById('modelStatus').textContent = `Saved: ${m}`;
+    toast('Model saved ✓');
+  }, 'saveModel');
 }
 
 async function saveSysPrompt() {
