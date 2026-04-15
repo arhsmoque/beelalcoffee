@@ -603,7 +603,10 @@ async function safe(fn, ctx) {
   try { return await fn(); }
   catch(e) {
     logError({ type:'safe_catch', ctx: ctx||'unknown', msg: e.message, stack: e.stack });
-    toast('Something went wrong. Try again.');
+    const msg = e.message === 'timeout' ? 'Request timed out. Check your connection.'
+              : e.message === 'Failed to fetch' ? 'Network error. Check your connection.'
+              : e.message || 'Something went wrong.';
+    toast(msg);
     return null;
   }
 }
@@ -611,10 +614,18 @@ async function safe(fn, ctx) {
 // ════════════════════════════════════════════════════════════
 // FIREBASE HELPERS
 // ════════════════════════════════════════════════════════════
-function fetchWithTimeout(url, ms = 5000) {
+function fetchWithTimeout(url, optsOrMs, ms) {
+  let opts = {}, timeout;
+  if (typeof optsOrMs === 'number') {
+    timeout = optsOrMs;
+  } else if (optsOrMs && typeof optsOrMs === 'object') {
+    opts = optsOrMs; timeout = ms || 5000;
+  } else {
+    timeout = 5000;
+  }
   return Promise.race([
-    fetch(url),
-    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
+    fetch(url, opts),
+    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), timeout))
   ]);
 }
 
@@ -1453,9 +1464,9 @@ function renderChatHistory() {
 }
 
 async function buildContext() {
-  const store = await fbGet('config/store') || {};
-  const theme = await fbGet('config/theme') || {};
-  const items = await fbGet('menu/items') || {};
+  const [store, theme, items] = (await Promise.all([
+    fbGet('config/store'), fbGet('config/theme'), fbGet('menu/items')
+  ])).map(r => r || {});
 
   const menuBycat = {};
   Object.values(items).forEach(i => {
@@ -1568,23 +1579,24 @@ async function sendChat() {
       })));
     }
 
-    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    const res = await fetchWithTimeout('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
+      headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json',
+                 'HTTP-Referer': location.origin, 'X-Title': 'Beelal Coffee Admin' },
       body: JSON.stringify({
         model: orModel,
         messages,
         max_tokens: 600,
         temperature: 0.3
       })
-    });
+    }, 25000);
 
     clearInterval(progTimer);
     progress.style.display = 'none';
     thinking.remove();
 
     const data = await res.json();
-    if (data.error) throw new Error(data.error.message || 'Gemini error');
+    if (data.error) throw new Error(`[${data.error.code || res.status}] ${data.error.message || 'AI error'}`);
 
     const raw  = data.choices?.[0]?.message?.content || '{}';
     let parsed;
@@ -1701,11 +1713,12 @@ async function testKey() {
   if (!k) { toast('Enter a key first'); return; }
   status.textContent = 'Testing...'; status.className = 'key-status';
   await safe(async () => {
-    const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    const r = await fetchWithTimeout('https://openrouter.ai/api/v1/chat/completions', {
       method:'POST',
-      headers:{'Authorization':`Bearer ${k}`,'Content-Type':'application/json'},
+      headers:{'Authorization':`Bearer ${k}`,'Content-Type':'application/json',
+               'HTTP-Referer':location.origin,'X-Title':'Beelal Coffee Admin'},
       body: JSON.stringify({ model: orModel, messages:[{role:'user',content:'Say: OK'}], max_tokens:30 })
-    });
+    }, 15000);
     const d = await r.json();
     if (d.error) throw new Error(`[${d.error.code || r.status}] ${d.error.message}`);
     const choice = d.choices?.[0];
