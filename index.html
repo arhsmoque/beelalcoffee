@@ -706,6 +706,23 @@ body {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ── IMAGE LIGHTBOX ──────────────────────────────────────── */
+.img-lightbox {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.88);
+  z-index: 2000;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+}
+.img-lightbox.open { opacity: 1; pointer-events: all; }
+.img-lightbox img {
+  max-width: 94vw; max-height: 88vh;
+  border-radius: 12px; object-fit: contain;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+}
+.card-img.has-photo { cursor: zoom-in; }
+
 /* ── ANIMATIONS ──────────────────────────────────────────── */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(12px); }
@@ -784,6 +801,11 @@ body {
       Send Order to WhatsApp
     </button>
   </div>
+</div>
+
+<!-- IMAGE LIGHTBOX -->
+<div class="img-lightbox" id="imgLightbox" onclick="closeImgLightbox()">
+  <img id="lightboxImg" src="" alt="">
 </div>
 
 <!-- SIZE PICKER SHEET -->
@@ -1147,7 +1169,7 @@ function makeCard(item) {
 
   // Image/emoji
   const imgHtml = item.img_url
-    ? `<div class="card-img"><img src="${item.img_url}" alt="${item.name}" loading="lazy"></div>`
+    ? `<div class="card-img has-photo" onclick="openImgLightbox('${item.img_url.replace(/'/g,"\\'")}')"><img src="${item.img_url}" alt="${item.name}" loading="lazy"></div>`
     : `<div class="card-img">${item.emoji || '🍽️'}</div>`;
 
   // Prices
@@ -1295,6 +1317,19 @@ function closeSizeSheet() {
 
 function handleSizeBgClick(e) {
   if (e.target === document.getElementById('sizeSheet')) closeSizeSheet();
+}
+
+// ════════════════════════════════════════════════════════════
+// IMAGE LIGHTBOX
+// ════════════════════════════════════════════════════════════
+function openImgLightbox(src) {
+  if (!src) return;
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('imgLightbox').classList.add('open');
+}
+function closeImgLightbox() {
+  document.getElementById('imgLightbox').classList.remove('open');
+  document.getElementById('lightboxImg').src = '';
 }
 
 // ════════════════════════════════════════════════════════════

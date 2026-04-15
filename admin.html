@@ -87,6 +87,10 @@ body{font-family:var(--fb);background:var(--bg);color:var(--text);min-height:100
 .form-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);padding:10px 12px;font-family:var(--fb);font-size:14px;color:var(--text);outline:none;transition:border-color 0.2s;}
 .form-input:focus{border-color:var(--gold);}
 .form-input::placeholder{color:var(--text3);}
+.photo-upload-area{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px;background:var(--bg3);border:1px dashed var(--border);border-radius:var(--r2);width:100%;}
+.photo-preview{width:100%;max-height:160px;object-fit:cover;border-radius:var(--r2);display:none;}
+.photo-upload-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:var(--card2);border:1px solid var(--border);border-radius:var(--r2);font-size:13px;color:var(--text);cursor:pointer;font-family:var(--fb);}
+.photo-remove-btn{font-size:12px;color:var(--red2);background:none;border:none;cursor:pointer;padding:2px 0;font-family:var(--fb);}
 .btn{width:100%;padding:13px;border:none;border-radius:var(--r2);font-family:var(--fb);font-size:14px;font-weight:700;cursor:pointer;transition:all 0.15s;margin-top:4px;}
 .btn:active{transform:scale(0.98);opacity:0.9;}
 .btn-primary{background:var(--gold);color:var(--bg);}
@@ -347,7 +351,14 @@ input[type=color]{width:32px;height:32px;border:none;border-radius:6px;cursor:po
       <div class="form-row"><label class="form-label">Name</label><input class="form-input" id="nName" placeholder="Item name"></div>
       <div class="form-row"><label class="form-label">Description (optional)</label><input class="form-input" id="nDesc" placeholder="e.g. Spicy, Club sandwich..."></div>
       <div class="form-row"><label class="form-label">Emoji</label><input class="form-input" id="nEmoji" placeholder="☕" maxlength="2"></div>
-      <div class="form-row"><label class="form-label">Image URL (optional)</label><input class="form-input" id="nImg" placeholder="https://..."></div>
+      <div class="form-row">
+        <label class="form-label">Photo (optional — JPG/PNG, auto-resized)</label>
+        <div class="photo-upload-area">
+          <img id="nImgPreview" class="photo-preview">
+          <input type="hidden" id="nImg">
+          <label class="photo-upload-btn">📷 Choose Photo<input type="file" accept="image/jpeg,image/png" style="display:none" onchange="handlePhotoUpload(this,'nImgPreview','nImg')"></label>
+        </div>
+      </div>
       <div class="form-row">
         <div class="form-label" style="margin-bottom:8px">Drink Prices (leave blank if not applicable)</div>
         <div class="price-grid">
@@ -969,6 +980,7 @@ async function addItem() {
     renderMenuList();
     toggleAddForm();
     ['nName','nDesc','nEmoji','nImg','nHot','nCold','nFrappe','nPrice'].forEach(i=>document.getElementById(i).value='');
+    const np = document.getElementById('nImgPreview'); np.src=''; np.style.display='none';
     toast('Item added ✓');
   }, 'addItem');
 }
@@ -983,7 +995,15 @@ function openEditModal(id) {
     <div class="form-row"><label class="form-label">Name</label><input class="form-input" id="eName" value="${item.name}"></div>
     <div class="form-row"><label class="form-label">Description</label><input class="form-input" id="eDesc" value="${item.desc||''}"></div>
     <div class="form-row"><label class="form-label">Emoji</label><input class="form-input" id="eEmoji" value="${item.emoji||'🍽️'}" maxlength="2"></div>
-    <div class="form-row"><label class="form-label">Image URL</label><input class="form-input" id="eImg" value="${item.img_url||''}"></div>
+    <div class="form-row">
+      <label class="form-label">Photo (JPG/PNG, auto-resized to 500px)</label>
+      <div class="photo-upload-area">
+        <img id="eImgPreview" class="photo-preview" src="${item.img_url||''}" style="${item.img_url?'display:block':'display:none'}">
+        <input type="hidden" id="eImg" value="${item.img_url||''}">
+        <label class="photo-upload-btn">📷 ${item.img_url?'Change Photo':'Upload Photo'}<input type="file" accept="image/jpeg,image/png" style="display:none" onchange="handlePhotoUpload(this,'eImgPreview','eImg')"></label>
+        ${item.img_url?`<button class="photo-remove-btn" onclick="removeItemPhoto('eImgPreview','eImg')">✕ Remove photo</button>`:''}
+      </div>
+    </div>
     ${isDrink?`<div class="price-grid" style="margin-bottom:12px">
       <div><label class="form-label">Hot (RM)</label><input class="form-input" id="eHot" type="number" step="0.5" value="${item.hot??''}"></div>
       <div><label class="form-label">Cold (RM)</label><input class="form-input" id="eCold" type="number" step="0.5" value="${item.cold??''}"></div>
@@ -992,6 +1012,57 @@ function openEditModal(id) {
     <button class="btn btn-primary" onclick="saveEdit()">Save Changes</button>
     <button class="btn btn-secondary" onclick="closeEditModal()" style="margin-top:8px">Cancel</button>`;
   document.getElementById('editModal').classList.add('open');
+}
+
+// ════════════════════════════════════════════════════════════
+// PHOTO UPLOAD
+// ════════════════════════════════════════════════════════════
+function resizeImageToDataURL(file, maxPx, quality) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width, h = img.height;
+        if (w > maxPx || h > maxPx) {
+          if (w >= h) { h = Math.round(h * maxPx / w); w = maxPx; }
+          else        { w = Math.round(w * maxPx / h); h = maxPx; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handlePhotoUpload(input, previewId, hiddenId) {
+  const file = input.files[0];
+  if (!file) return;
+  if (!['image/jpeg','image/png'].includes(file.type)) {
+    toast('JPG or PNG only'); input.value = ''; return;
+  }
+  toast('Resizing image...');
+  try {
+    const dataUrl = await resizeImageToDataURL(file, 500, 0.72);
+    const preview = document.getElementById(previewId);
+    preview.src = dataUrl;
+    preview.style.display = 'block';
+    document.getElementById(hiddenId).value = dataUrl;
+    toast('Photo ready — tap Save to apply ✓');
+  } catch { toast('Failed to process image'); }
+}
+
+function removeItemPhoto(previewId, hiddenId) {
+  const preview = document.getElementById(previewId);
+  preview.src = ''; preview.style.display = 'none';
+  document.getElementById(hiddenId).value = '';
+  toast('Photo removed — tap Save to apply');
 }
 
 async function saveEdit() {
