@@ -677,6 +677,40 @@ body {
   cursor: pointer;
 }
 
+/* ── ADDONS SHEET ────────────────────────────────────────── */
+.addon-group { margin-bottom: 14px; }
+.addon-group-label {
+  font-size: 11px; font-weight: 700; color: var(--text2);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+}
+.addon-required {
+  font-size: 9px; background: var(--accent); color: var(--surface);
+  padding: 2px 7px; border-radius: 10px; font-weight: 700;
+  letter-spacing: 0; text-transform: uppercase;
+}
+.addon-opt {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); margin-bottom: 6px;
+  cursor: pointer; font-size: 14px; color: var(--text);
+  font-family: var(--font-body);
+}
+.addon-opt input[type=radio],
+.addon-opt input[type=checkbox] { accent-color: var(--accent); width: 18px; height: 18px; flex-shrink: 0; }
+.addon-toggle { justify-content: space-between; }
+.addon-toggle-name { flex: 1; }
+.addon-price { font-weight: 700; color: var(--accent); font-size: 14px; }
+.addon-confirm-btn {
+  width: 100%; background: var(--accent); color: var(--surface);
+  border: none; border-radius: var(--radius-md); padding: 15px;
+  font-family: var(--font-body); font-size: 15px; font-weight: 700;
+  cursor: pointer; margin-top: 12px; transition: all 0.2s;
+}
+.addon-confirm-btn:active { transform: scale(0.98); }
+.cart-row-addons { font-size: 10px; color: var(--text3); margin-top: 2px; }
+
 /* ── LOADER ──────────────────────────────────────────────── */
 .loader-wrap {
   position: fixed; inset: 0;
@@ -819,6 +853,18 @@ body {
   </div>
 </div>
 
+<!-- ADDONS SHEET -->
+<div class="size-sheet-bg" id="addonsSheet" onclick="handleAddonsBgClick(event)">
+  <div class="size-sheet">
+    <div class="sheet-handle"></div>
+    <div class="size-sheet-title" id="addonsSheetTitle"></div>
+    <div class="size-sheet-sub" id="addonsSheetSub"></div>
+    <div id="addonsSheetOpts"></div>
+    <button class="addon-confirm-btn" onclick="confirmAddons()">Confirm &amp; Add to Order</button>
+    <button class="size-cancel" onclick="closeAddonsSheet()">Cancel</button>
+  </div>
+</div>
+
 <script>
 // ════════════════════════════════════════════════════════════
 // CONFIG
@@ -924,11 +970,12 @@ const DEFAULT_MENU = {
 // ════════════════════════════════════════════════════════════
 // STATE
 // ════════════════════════════════════════════════════════════
-let storeConfig = null;
-let menuData    = null;
-let cart        = []; // { uid, id, name, size, oz, price }
-let cartUid     = 0;
-let sizePending = null;
+let storeConfig   = null;
+let menuData      = null;
+let cart          = []; // { uid, id, name, size, oz, price, addons }
+let cartUid       = 0;
+let sizePending   = null;
+let addonsPending = null; // { item, size, oz, price }
 
 // ════════════════════════════════════════════════════════════
 // FIREBASE HELPERS WITH TIMEOUT & PARALLEL FETCHING
@@ -945,6 +992,14 @@ async function fbGet(path) {
     const r = await fetchWithTimeout(`${FB_URL}/${FB_ROOT}/${path}.json`);
     return await r.json();
   } catch { return null; }
+}
+
+// Returns { data, ok } — ok=false means network/timeout failure (data is NOT confirmed empty)
+async function fbGetSafe(path) {
+  try {
+    const r = await fetchWithTimeout(`${FB_URL}/${FB_ROOT}/${path}.json`);
+    return { data: await r.json(), ok: true };
+  } catch { return { data: null, ok: false }; }
 }
 
 async function fbSet(path, data) {
@@ -966,12 +1021,14 @@ async function init() {
   }, 8000);
 
   // Fetch config + menu in parallel instead of sequentially
-  const [cfg, theme, items, cats] = await Promise.all([
-    fbGet('config/store'),
-    fbGet('config/theme'),
-    fbGet('menu/items'),
-    fbGet('menu/categories')
+  const [cfgR, themeR, itemsR, catsR] = await Promise.all([
+    fbGetSafe('config/store'),
+    fbGetSafe('config/theme'),
+    fbGetSafe('menu/items'),
+    fbGetSafe('menu/categories')
   ]);
+
+  const cfg = cfgR.data, theme = themeR.data, items = itemsR.data, cats = catsR.data;
 
   storeConfig = cfg ? { ...DEFAULT_CONFIG.store, ...cfg } : { ...DEFAULT_CONFIG.store };
   applyTheme(theme || DEFAULT_CONFIG.theme);
@@ -980,11 +1037,12 @@ async function init() {
     items: items ? Object.values(items) : DEFAULT_MENU.items
   };
 
-  // Seed Firebase if empty (fire-and-forget, don't await)
-  if (!cfg)    fbSet('config/store', DEFAULT_CONFIG.store);
-  if (!theme)  fbSet('config/theme', DEFAULT_CONFIG.theme);
-  if (!items) { const obj = {}; DEFAULT_MENU.items.forEach(i => obj[i.id] = i); fbSet('menu/items', obj); }
-  if (!cats)  { const obj = {}; DEFAULT_MENU.categories.forEach(c => obj[c.id] = c); fbSet('menu/categories', obj); }
+  // Only seed Firebase when the fetch actually reached the server AND the path is empty.
+  // If ok=false (network/timeout error), do NOT overwrite — data may exist on Firebase.
+  if (cfgR.ok && !cfg)    fbSet('config/store', DEFAULT_CONFIG.store);
+  if (themeR.ok && !theme) fbSet('config/theme', DEFAULT_CONFIG.theme);
+  if (itemsR.ok && !items) { const obj = {}; DEFAULT_MENU.items.forEach(i => obj[i.id] = i); fbSet('menu/items', obj); }
+  if (catsR.ok && !cats)  { const obj = {}; DEFAULT_MENU.categories.forEach(c => obj[c.id] = c); fbSet('menu/categories', obj); }
 
   renderHeader();
   renderMenu();
@@ -1241,18 +1299,21 @@ function handleAdd(e, itemId) {
   const item = menuData.items.find(i => i.id === itemId);
   if (!item) return;
   const isDrink = item.hot != null || item.cold != null || item.frappe != null;
+  const hasAddons = item.addons && item.addons.length > 0;
   if (isDrink) {
     const sizes = [];
-    if (item.hot    != null) sizes.push({ label:'Hot',    oz:'8oz',  price: item.hot });
-    if (item.cold   != null) sizes.push({ label:'Cold',   oz:'12oz', price: item.cold });
-    if (item.frappe != null) sizes.push({ label:'Frappé', oz:'16oz', price: item.frappe });
+    if (item.hot    != null) sizes.push({ label:'Hot',    oz: item.hot_oz    || '8oz',  price: item.hot });
+    if (item.cold   != null) sizes.push({ label:'Cold',   oz: item.cold_oz   || '12oz', price: item.cold });
+    if (item.frappe != null) sizes.push({ label:'Frappé', oz: item.frappe_oz || '16oz', price: item.frappe });
     if (sizes.length === 1) {
-      addToCart(item, sizes[0].label, sizes[0].oz, sizes[0].price);
+      if (hasAddons) openAddonsSheet(item, sizes[0].label, sizes[0].oz, sizes[0].price);
+      else           addToCart(item, sizes[0].label, sizes[0].oz, sizes[0].price, []);
     } else {
       openSizeSheet(item, sizes);
     }
   } else {
-    addToCart(item, null, null, item.price);
+    if (hasAddons) openAddonsSheet(item, null, null, item.price);
+    else           addToCart(item, null, null, item.price, []);
   }
 }
 
@@ -1263,8 +1324,10 @@ function handleRemove(e, itemId) {
   if (idx >= 0) { cart.splice(idx, 1); updateCartUI(); refreshCard(itemId); }
 }
 
-function addToCart(item, size, oz, price) {
-  cart.push({ uid: cartUid++, id: item.id, name: item.name, size, oz, price: Number(price) });
+function addToCart(item, size, oz, basePrice, addons) {
+  addons = addons || [];
+  const addonTotal = addons.reduce((s, a) => s + (Number(a.price) || 0), 0);
+  cart.push({ uid: cartUid++, id: item.id, name: item.name, size, oz, price: Number(basePrice) + addonTotal, addons });
   updateCartUI();
   refreshCard(item.id);
 }
@@ -1304,7 +1367,11 @@ function openSizeSheet(item, sizes) {
         <div class="size-opt-oz">${s.oz}</div>
       </div>
       <div class="size-opt-price">RM ${s.price}</div>`;
-    d.onclick = () => { addToCart(item, s.label, s.oz, s.price); closeSizeSheet(); };
+    d.onclick = () => {
+      closeSizeSheet();
+      if (item.addons && item.addons.length) openAddonsSheet(item, s.label, s.oz, s.price);
+      else addToCart(item, s.label, s.oz, s.price, []);
+    };
     opts.appendChild(d);
   });
   document.getElementById('sizeSheet').classList.add('open');
@@ -1317,6 +1384,65 @@ function closeSizeSheet() {
 
 function handleSizeBgClick(e) {
   if (e.target === document.getElementById('sizeSheet')) closeSizeSheet();
+}
+
+// ════════════════════════════════════════════════════════════
+// ADDONS SHEET
+// ════════════════════════════════════════════════════════════
+function openAddonsSheet(item, size, oz, price) {
+  addonsPending = { item, size, oz, price };
+  document.getElementById('addonsSheetTitle').textContent = item.name;
+  const sub = size ? `${size} · ${oz}  —  RM ${Number(price).toFixed(2)}` : `RM ${Number(price).toFixed(2)}`;
+  document.getElementById('addonsSheetSub').textContent = sub;
+
+  const opts = document.getElementById('addonsSheetOpts');
+  opts.innerHTML = '';
+  item.addons.forEach(addon => {
+    const group = document.createElement('div');
+    group.className = 'addon-group';
+    if (addon.type === 'select') {
+      group.innerHTML = `<div class="addon-group-label">${addon.name} <span class="addon-required">Required</span></div>`;
+      (addon.options || []).forEach((opt, idx) => {
+        const lbl = document.createElement('label');
+        lbl.className = 'addon-opt';
+        lbl.innerHTML = `<input type="radio" name="addon_${addon.id}" value="${opt}" ${idx === 0 ? 'checked' : ''}><span>${opt}</span>`;
+        group.appendChild(lbl);
+      });
+    } else {
+      const lbl = document.createElement('label');
+      lbl.className = 'addon-opt addon-toggle';
+      lbl.innerHTML = `<input type="checkbox" id="addon_${addon.id}"><span class="addon-toggle-name">${addon.name}</span><span class="addon-price">+RM${addon.price}</span>`;
+      group.appendChild(lbl);
+    }
+    opts.appendChild(group);
+  });
+  document.getElementById('addonsSheet').classList.add('open');
+}
+
+function confirmAddons() {
+  if (!addonsPending) return;
+  const { item, size, oz, price } = addonsPending;
+  const selectedAddons = [];
+  (item.addons || []).forEach(addon => {
+    if (addon.type === 'select') {
+      const sel = document.querySelector(`input[name="addon_${addon.id}"]:checked`);
+      if (sel) selectedAddons.push({ name: addon.name, value: sel.value, price: 0 });
+    } else {
+      const cb = document.getElementById(`addon_${addon.id}`);
+      if (cb && cb.checked) selectedAddons.push({ name: addon.name, value: 'Yes', price: Number(addon.price) || 0 });
+    }
+  });
+  closeAddonsSheet();
+  addToCart(item, size, oz, price, selectedAddons);
+}
+
+function closeAddonsSheet() {
+  document.getElementById('addonsSheet').classList.remove('open');
+  addonsPending = null;
+}
+
+function handleAddonsBgClick(e) {
+  if (e.target === document.getElementById('addonsSheet')) closeAddonsSheet();
 }
 
 // ════════════════════════════════════════════════════════════
@@ -1357,10 +1483,12 @@ function renderCartSheet() {
   cart.forEach(item => {
     const row = document.createElement('div');
     row.className = 'cart-row';
+    const addonsStr = (item.addons || []).map(a => `${a.name}: ${a.value}`).join(' · ');
     row.innerHTML = `
       <div class="cart-row-info">
         <div class="cart-row-name">${item.name}</div>
         ${item.size ? `<div class="cart-row-size">${item.size} · ${item.oz}</div>` : ''}
+        ${addonsStr ? `<div class="cart-row-addons">${addonsStr}</div>` : ''}
       </div>
       <span class="cart-row-price">RM ${item.price.toFixed(2)}</span>
       <button class="cart-row-del" onclick="removeByUid(${item.uid})">×</button>`;
@@ -1382,13 +1510,16 @@ async function sendOrder() {
   msg += `👤 ${name}\n\n*Items:*\n`;
   cart.forEach((item, i) => {
     msg += `${i+1}. ${item.name}${item.size ? ` (${item.size})` : ''} — RM ${item.price.toFixed(2)}\n`;
+    (item.addons || []).forEach(a => {
+      msg += `   • ${a.name}: ${a.value}${a.price ? ` (+RM${a.price})` : ''}\n`;
+    });
   });
   msg += `\n💰 *Total: RM ${total.toFixed(2)}*`;
   if (note) msg += `\n\n📝 ${note}`;
   msg += `\n\n_via Beelal Coffee menu_`;
 
   // Log to Firebase (ring buffer)
-  await logOrder({ name, items: cart.map(i => ({ name:i.name, size:i.size, price:i.price })), total, note, ts: Date.now() });
+  await logOrder({ name, items: cart.map(i => ({ name:i.name, size:i.size, price:i.price, addons:i.addons })), total, note, ts: Date.now() });
 
   window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
 }
