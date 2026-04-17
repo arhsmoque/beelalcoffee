@@ -1518,10 +1518,12 @@ async function sendOrder() {
   if (note) msg += `\n\n📝 ${note}`;
   msg += `\n\n_via Beelal Coffee menu_`;
 
-  // Log to Firebase (ring buffer)
-  await logOrder({ name, items: cart.map(i => ({ name:i.name, size:i.size, price:i.price, addons:i.addons })), total, note, ts: Date.now() });
-
+  // Open WhatsApp immediately — must stay in the same synchronous tick as the
+  // user tap, otherwise mobile browsers (iOS Safari) block it as a popup.
   window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+
+  // Log to Firebase after — fire-and-forget, don't block WhatsApp open
+  logOrder({ name, items: cart.map(i => ({ name:i.name, size:i.size, price:i.price, addons:i.addons })), total, note, ts: Date.now() });
 }
 
 async function logOrder(order) {
