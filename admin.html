@@ -4,9 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#1A1108">
-<title>Beelal Admin</title>
+<title>Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="config.js"></script>
 <!-- JSZip for ZIP extraction -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
@@ -279,7 +280,7 @@ input[type=color]{width:32px;height:32px;border:none;border-radius:6px;cursor:po
 
 <!-- PIN SCREEN -->
 <div class="pin-screen" id="pinScreen">
-  <div class="pin-logo">Beelal Admin</div>
+  <div class="pin-logo" id="pinLogo">Admin Panel</div>
   <!-- First run: dev PIN setup -->
   <div class="pin-first-run" id="firstRunSetup" style="display:none">
     <div class="pin-first-run-title">⚙ First Time Setup — Developer</div>
@@ -317,7 +318,7 @@ input[type=color]{width:32px;height:32px;border:none;border-radius:6px;cursor:po
 <!-- MAIN APP -->
 <div class="app" id="mainApp">
   <div class="topbar">
-    <div><div class="topbar-title">Beelal Admin</div><div class="topbar-role" id="roleLabel">Owner</div></div>
+    <div><div class="topbar-title" id="topbarTitle">Admin Panel</div><div class="topbar-role" id="roleLabel">Owner</div></div>
     <button class="lock-btn" onclick="logout()">Lock</button>
   </div>
   <div class="tab-nav">
@@ -342,10 +343,10 @@ input[type=color]{width:32px;height:32px;border:none;border-radius:6px;cursor:po
     </div>
     <div class="a-card">
       <div class="a-card-title">Store Info</div>
-      <div class="form-row"><label class="form-label">Store Name</label><input class="form-input" id="iName" placeholder="Beelal Coffee"></div>
+      <div class="form-row"><label class="form-label">Store Name</label><input class="form-input" id="iName" placeholder="My Coffee Shop"></div>
       <div class="form-row"><label class="form-label">Slogan</label><input class="form-input" id="iSlogan" placeholder="Medium Dark Roast · 100% Arabica"></div>
       <div class="form-row"><label class="form-label">Opening Hours</label><input class="form-input" id="iHours" placeholder="8:00 AM – 10:00 PM daily"></div>
-      <div class="form-row"><label class="form-label">WhatsApp Number</label><input class="form-input" id="iPhone" placeholder="60122203743" inputmode="numeric"></div>
+      <div class="form-row"><label class="form-label">WhatsApp Number</label><input class="form-input" id="iPhone" placeholder="Country code + number, digits only" inputmode="numeric"></div>
       <div class="form-row"><label class="form-label">Logo URL (optional)</label><input class="form-input" id="iLogo" placeholder="https://..."></div>
       <button class="btn btn-primary" onclick="saveStore()">Save Store Info</button>
     </div>
@@ -375,11 +376,11 @@ input[type=color]{width:32px;height:32px;border:none;border-radius:6px;cursor:po
       </div>
       <div class="form-row">
         <div class="form-label" style="margin-bottom:8px">Drink Sizes (leave Price blank to hide that size)</div>
-        <div class="size-config-row"><span class="size-config-label">🔥 Hot</span><input class="form-input" id="nHot" type="number" step="0.5" placeholder="Price (RM)"><input class="form-input" id="nHotOz" placeholder="e.g. 8oz"></div>
-        <div class="size-config-row"><span class="size-config-label">❄️ Cold</span><input class="form-input" id="nCold" type="number" step="0.5" placeholder="Price (RM)"><input class="form-input" id="nColdOz" placeholder="e.g. 12oz"></div>
-        <div class="size-config-row"><span class="size-config-label">🧋 Frappé</span><input class="form-input" id="nFrappe" type="number" step="0.5" placeholder="Price (RM)"><input class="form-input" id="nFrappeOz" placeholder="e.g. 16oz"></div>
+        <div class="size-config-row"><span class="size-config-label">🔥 Hot</span><input class="form-input" id="nHot" type="number" step="0.5" data-cur-placeholder="Price (CUR)"><input class="form-input" id="nHotOz" placeholder="e.g. 8oz"></div>
+        <div class="size-config-row"><span class="size-config-label">❄️ Cold</span><input class="form-input" id="nCold" type="number" step="0.5" data-cur-placeholder="Price (CUR)"><input class="form-input" id="nColdOz" placeholder="e.g. 12oz"></div>
+        <div class="size-config-row"><span class="size-config-label">🧋 Frappé</span><input class="form-input" id="nFrappe" type="number" step="0.5" data-cur-placeholder="Price (CUR)"><input class="form-input" id="nFrappeOz" placeholder="e.g. 16oz"></div>
       </div>
-      <div class="form-row"><label class="form-label">Fixed Price — Food (RM)</label><input class="form-input" id="nPrice" type="number" step="0.5" placeholder="Leave blank for drinks"></div>
+      <div class="form-row"><label class="form-label" data-cur-label="Fixed Price — Food (CUR)">Fixed Price — Food (RM)</label><input class="form-input" id="nPrice" type="number" step="0.5" placeholder="Leave blank for drinks"></div>
       <button class="btn btn-primary" onclick="addItem()">Add Item</button>
       <button class="btn btn-secondary" onclick="toggleAddForm()" style="margin-top:8px">Cancel</button>
     </div>
@@ -604,10 +605,11 @@ input[type=color]{width:32px;height:32px;border:none;border-radius:6px;cursor:po
 
 <script>
 // ════════════════════════════════════════════════════════════
-// FIREBASE CONFIG
+// FIREBASE CONFIG  (values come from config.js)
 // ════════════════════════════════════════════════════════════
-const FB_URL  = 'https://ash-2026-photobook-default-rtdb.asia-southeast1.firebasedatabase.app';
-const FB_ROOT = 'beelal_coffee';
+const FB_URL  = APP_CONFIG.firebase.url;
+const FB_ROOT = APP_CONFIG.firebase.root;
+const CUR     = APP_CONFIG.store.currency;
 
 // ════════════════════════════════════════════════════════════
 // ERROR BOUNDARY — belt and suspenders
@@ -688,49 +690,9 @@ async function fbDelete(path) {
 // ════════════════════════════════════════════════════════════
 // DEFAULT DATA
 // ════════════════════════════════════════════════════════════
-const DEFAULT_THEME = {
-  bg:'#FEF7EE',bg2:'#F9F0E1',bg3:'#F2E6CE',surface:'#FFFFFF',
-  primary:'#2C1A0E',accent:'#C8962A',accent2:'#E8B84B',
-  text:'#1C110A',text2:'#7A5C3E',text3:'#B89070',
-  font_display:"'Playfair Display', Georgia, serif",
-  font_body:"'DM Sans', sans-serif"
-};
+const DEFAULT_THEME = APP_CONFIG.defaultTheme;
 
-const DEFAULT_SYS_PROMPT = `You are a calm, precise assistant for a small Malaysian coffee business called Beelal Coffee.
-
-PERSONA: Warm but efficient. Like a knowledgeable trusted advisor, not a chatbot. Think Jarvis — composed, helpful, never robotic. Adapt to the user's language naturally (Malay, English, or mix). Never say sorry. Never say "As an AI". Never be sycophantic.
-
-RESPONSE STRUCTURE (always follow this order):
-1. [Faham] — Brief restatement showing you understood
-2. [Buat] — What action you are taking
-3. [Siap] — Confirm what changed
-4. [Cadangan] — One optional enhancement suggestion (keep short)
-
-AMBIGUITY THRESHOLD — slot filling:
-Every request needs: WHAT (what to change) | WHERE (which section/element) | HOW (bold, italic, color, size) | CONSTRAINT (what not to touch)
-- 3 or 4 slots filled → proceed, state any assumed slot
-- 2 slots filled → ask ONE targeted clarifying question only
-- 1 slot filled → ask for more detail before proceeding
-
-SCOPE RULES:
-- Only change what is explicitly requested
-- Never touch WhatsApp button color (must stay green)
-- Never change layout, spacing, or grid structure
-- Never change store phone number or name unless explicitly asked
-- When in doubt, do less not more
-
-OUTPUT FORMAT for theme/CSS changes:
-Return a JSON object only, no explanation outside the JSON:
-{
-  "understood": "brief restatement",
-  "action": "what you did",
-  "changes": { "theme": {...}, "store": {...}, "menu_availability": {...} },
-  "suggestion": "one optional tip"
-}
-
-CONTEXT: You receive full store state as YAML before each request. Use it to understand current values before making changes.
-
-LANGUAGE: Match user's language. If Malay or Kelantanese dialect, respond in warm standard Malay. If English, respond in English. If mixed, match the mix.`;
+const DEFAULT_SYS_PROMPT = APP_CONFIG.ai.systemPrompt;
 
 const FONT_TARGETS = [
   { id:'store_heading',   label:'Store Name + Section Headings',   cssVar:'--font-display' },
@@ -751,14 +713,7 @@ const COLOR_TARGETS = [
   { id:'primary',   label:'Headings & Logo',        fbKey:'primary'  },
 ];
 
-const QUICK_CHIPS = [
-  { label:'🌙 Raya Theme',       prompt:'Retheme for Hari Raya Aidilfitri — festive green and gold tones' },
-  { label:'🎒 School Holidays',  prompt:'Retheme for school holidays — brighter, more cheerful and welcoming' },
-  { label:'↩ Reset to Default',  prompt:'Reset all theme colors and fonts back to original Beelal Coffee warm cream and espresso brown' },
-  { label:'✏️ Change Slogan',    prompt:'Change the slogan to: ' },
-  { label:'🍝 Pasta Off',        prompt:'Mark all pasta items as sold out for today' },
-  { label:'✅ All Available',    prompt:'Mark all menu items as available' },
-];
+const QUICK_CHIPS = APP_CONFIG.ai.quickChips;
 
 // ════════════════════════════════════════════════════════════
 // STATE
@@ -769,7 +724,7 @@ let menuItems     = [];
 let menuCats      = [];
 let storeData     = {};
 let chatHistory   = [];   // { role, content, ts }
-let orModel       = 'google/gemma-4-26b-it:free'; // active model, updated from Firebase
+let orModel       = APP_CONFIG.ai.model; // active model, updated from Firebase
 let extractedFonts  = null;
 let extractedPalette = [];
 let fontChoices   = {};   // { targetId: 'current' | 'template' }
@@ -783,6 +738,18 @@ let toastTimer    = null;
 // INIT
 // ════════════════════════════════════════════════════════════
 async function init() {
+  // Apply branding from config.js
+  document.title = APP_CONFIG.brand.adminName;
+  document.getElementById('pinLogo').textContent   = APP_CONFIG.brand.adminName;
+  document.getElementById('topbarTitle').textContent = APP_CONFIG.brand.adminName;
+  // Update currency labels in add-item form
+  document.querySelectorAll('[data-cur-label]').forEach(el => {
+    el.textContent = el.getAttribute('data-cur-label').replace('CUR', CUR);
+  });
+  document.querySelectorAll('[data-cur-placeholder]').forEach(el => {
+    el.placeholder = el.getAttribute('data-cur-placeholder').replace('CUR', CUR);
+  });
+
   await safe(async () => {
     const p = await fbGet('config/pins');
     if (p) { if(p.owner) pins.owner = p.owner; if(p.dev) pins.dev = p.dev; }
@@ -903,10 +870,10 @@ function showTab(id, el) {
 async function loadStoreTab() {
   const s = await safe(() => fbGet('config/store'), 'loadStore');
   storeData = s || {};
-  document.getElementById('iName').value   = storeData.name    || 'Beelal Coffee';
+  document.getElementById('iName').value   = storeData.name    || APP_CONFIG.store.name;
   document.getElementById('iSlogan').value = storeData.slogan  || '';
   document.getElementById('iHours').value  = storeData.hours   || '';
-  document.getElementById('iPhone').value  = storeData.phone   || '60122203743';
+  document.getElementById('iPhone').value  = storeData.phone   || APP_CONFIG.store.phone;
   document.getElementById('iLogo').value   = storeData.logo_url|| '';
   document.getElementById('togOpen').checked = storeData.isOpen !== false;
 }
@@ -969,8 +936,8 @@ function renderMenuList() {
 function makeMIR(item) {
   const isDrink = item.hot!=null||item.cold!=null||item.frappe!=null;
   let price = isDrink
-    ? [item.hot&&`H:RM${item.hot}`,item.cold&&`C:RM${item.cold}`,item.frappe&&`F:RM${item.frappe}`].filter(Boolean).join(' · ')
-    : `RM ${Number(item.price).toFixed(2)}`;
+    ? [item.hot&&`H:${CUR}${item.hot}`,item.cold&&`C:${CUR}${item.cold}`,item.frappe&&`F:${CUR}${item.frappe}`].filter(Boolean).join(' · ')
+    : `${CUR} ${Number(item.price).toFixed(2)}`;
   const d = document.createElement('div');
   d.className = 'mir'+(item.avail===false?' unavail':'');
   d.id = 'mir-'+item.id;
@@ -1070,7 +1037,7 @@ function openEditModal(id) {
       <div class="size-config-row"><span class="size-config-label">🔥 Hot</span><input class="form-input" id="eHot" type="number" step="0.5" placeholder="Price" value="${item.hot??''}"><input class="form-input" id="eHotOz" placeholder="e.g. 8oz" value="${item.hot_oz||''}"></div>
       <div class="size-config-row"><span class="size-config-label">❄️ Cold</span><input class="form-input" id="eCold" type="number" step="0.5" placeholder="Price" value="${item.cold??''}"><input class="form-input" id="eColdOz" placeholder="e.g. 12oz" value="${item.cold_oz||''}"></div>
       <div class="size-config-row"><span class="size-config-label">🧋 Frappé</span><input class="form-input" id="eFrappe" type="number" step="0.5" placeholder="Price" value="${item.frappe??''}"><input class="form-input" id="eFrappeOz" placeholder="e.g. 16oz" value="${item.frappe_oz||''}"></div>
-    </div>`:`<div class="form-row"><label class="form-label">Price (RM)</label><input class="form-input" id="ePrice" type="number" step="0.5" value="${item.price??''}"></div>`}
+    </div>`:`<div class="form-row"><label class="form-label">Price (${CUR})</label><input class="form-input" id="ePrice" type="number" step="0.5" value="${item.price??''}"></div>`}
     <div class="form-row" style="margin-top:4px">
       <div class="a-card-title">Options / Add-ons</div>
       <div style="font-size:11px;color:var(--text2);margin-bottom:8px">Choice = required selection (e.g. sauce type). Optional = checkbox with extra price.</div>
@@ -1301,7 +1268,7 @@ function refreshAddonsEditor() {
         </div>
         <div class="addon-fields" style="display:grid;grid-template-columns:1fr 90px;gap:6px">
           <input class="form-input" placeholder="Label (e.g. Extra Sauce)" value="${addon.name||''}" oninput="editingAddons[${idx}].name=this.value">
-          <input class="form-input" type="number" step="0.5" placeholder="RM" value="${addon.price||''}" oninput="editingAddons[${idx}].price=parseFloat(this.value)||0">
+          <input class="form-input" type="number" step="0.5" placeholder="${CUR}" value="${addon.price||''}" oninput="editingAddons[${idx}].price=parseFloat(this.value)||0">
         </div>`;
     }
     el.appendChild(row);
@@ -1339,12 +1306,12 @@ async function loadOrders() {
     el.innerHTML = '';
     orders.forEach(o => {
       const d = new Date(o.ts);
-      const t = d.toLocaleDateString('en-MY')+' '+d.toLocaleTimeString('en-MY',{hour:'2-digit',minute:'2-digit'});
+      const t = d.toLocaleDateString(APP_CONFIG.brand.locale)+' '+d.toLocaleTimeString(APP_CONFIG.brand.locale,{hour:'2-digit',minute:'2-digit'});
       const r = document.createElement('div');
       r.className = 'order-row';
-      const itemsStr = (o.items||[]).map(i=>`${i.name}${i.size?' ('+i.size+')':''} — RM${Number(i.price).toFixed(2)}`).join('<br>');
+      const itemsStr = (o.items||[]).map(i=>`${i.name}${i.size?' ('+i.size+')':''} — ${CUR}${Number(i.price).toFixed(2)}`).join('<br>');
       r.innerHTML = `
-        <div class="order-top"><span class="order-name">👤 ${o.name}</span><span class="order-total">RM ${Number(o.total).toFixed(2)}</span></div>
+        <div class="order-top"><span class="order-name">👤 ${o.name}</span><span class="order-total">${CUR} ${Number(o.total).toFixed(2)}</span></div>
         <div class="order-time">${t}</div>
         <div class="order-items">${itemsStr}</div>
         ${o.note?`<div style="margin-top:4px;font-size:11px;color:var(--text3);font-style:italic">📝 ${o.note}</div>`:''}`;
@@ -1508,7 +1475,7 @@ function renderFontPanel(fonts) {
   wrap.innerHTML = `
     <div class="font-preview">
       <div class="font-preview-name">Template Display Font</div>
-      <div class="font-preview-sample" style="font-family:${primaryFamily}">Beelal Coffee</div>
+      <div class="font-preview-sample" style="font-family:${primaryFamily}">${APP_CONFIG.brand.appName}</div>
       <div class="font-preview-body" style="font-family:${fonts.families[1]||primaryFamily}">Freshly brewed every morning. Open 8AM.</div>
     </div>`;
 
@@ -1701,16 +1668,16 @@ async function buildContext() {
     menuBycat[i.cat].push({
       name: i.name,
       available: i.avail !== false,
-      ...(i.price ? { price: `RM${i.price}` } : {}),
-      ...(i.hot   ? { hot:   `RM${i.hot}`   } : {}),
-      ...(i.cold  ? { cold:  `RM${i.cold}`  } : {}),
-      ...(i.frappe? { frappe:`RM${i.frappe}`} : {}),
+      ...(i.price ? { price: `${CUR}${i.price}` } : {}),
+      ...(i.hot   ? { hot:   `${CUR}${i.hot}`   } : {}),
+      ...(i.cold  ? { cold:  `${CUR}${i.cold}`  } : {}),
+      ...(i.frappe? { frappe:`${CUR}${i.frappe}`} : {}),
     });
   });
 
   return `CURRENT STATE:
 store:
-  name: ${store.name || 'Beelal Coffee'}
+  name: ${store.name || APP_CONFIG.store.name}
   status: ${store.isOpen !== false ? 'open' : 'closed'}
   hours: ${store.hours || '8AM - 10PM'}
   slogan: ${store.slogan || ''}
@@ -1751,11 +1718,11 @@ site_structure:
 }
 
 const PROGRESS_MSGS = [
-  'Membaca konteks menu...',
-  'Mentafsir permintaan...',
-  'Menyediakan perubahan...',
-  'Menghantar ke Gemini...',
-  'Menunggu respons...',
+  'Reading menu context...',
+  'Interpreting request...',
+  'Preparing changes...',
+  'Sending to AI...',
+  'Waiting for response...',
 ];
 
 async function sendChat() {
@@ -1809,7 +1776,7 @@ async function sendChat() {
     const res = await fetchWithTimeout('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json',
-                 'HTTP-Referer': location.origin, 'X-Title': 'Beelal Coffee Admin' },
+                 'HTTP-Referer': location.origin, 'X-Title': APP_CONFIG.brand.adminName },
       body: JSON.stringify({
         model: orModel,
         messages,
@@ -1925,7 +1892,7 @@ async function loadErrorLog() {
   errors.forEach(e => {
     const d = document.createElement('div');
     d.className = 'error-row';
-    const t = new Date(e.ts).toLocaleString('en-MY');
+    const t = new Date(e.ts).toLocaleString(APP_CONFIG.brand.locale);
     d.innerHTML = `
       <div class="error-row-time">${t}</div>
       <div class="error-row-msg">${e.msg || 'Unknown error'}</div>
@@ -1943,7 +1910,7 @@ async function testKey() {
     const r = await fetchWithTimeout('https://openrouter.ai/api/v1/chat/completions', {
       method:'POST',
       headers:{'Authorization':`Bearer ${k}`,'Content-Type':'application/json',
-               'HTTP-Referer':location.origin,'X-Title':'Beelal Coffee Admin'},
+               'HTTP-Referer':location.origin,'X-Title':APP_CONFIG.brand.adminName},
       body: JSON.stringify({ model: orModel, messages:[{role:'user',content:'Say: OK'}], max_tokens:30 })
     }, 15000);
     const d = await r.json();
