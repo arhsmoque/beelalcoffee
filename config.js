@@ -1,35 +1,30 @@
 /**
- * config.js — Business Configuration
+ * config.js — Beelal Coffee
  *
- * Edit this file once to deploy the template for your business.
- * All Firebase, store identity, branding, and AI settings live here.
- * Everything else (theme, full menu, PIN security) is managed via the Admin panel.
+ * Store-specific configuration for Beelal Coffee.
+ * Edit this file to update Firebase, store identity, branding, or AI settings.
+ * Theme, full menu, and PIN security are managed via the Admin panel.
  */
 const APP_CONFIG = {
 
   // ── Firebase Realtime Database ──────────────────────────────────────────────
-  // 1. Create a free Firebase project at https://console.firebase.google.com
-  // 2. Enable Realtime Database → start in test mode
-  // 3. Copy the database URL (looks like https://YOUR-APP-default-rtdb.firebaseio.com)
   firebase: {
-    url:  'YOUR_FIREBASE_RTDB_URL',   // e.g. https://my-app-default-rtdb.firebaseio.com
-    root: 'my_shop',                  // Namespace key in the DB (no slashes, no spaces)
+    url:  'https://ash-2026-photobook-default-rtdb.asia-southeast1.firebasedatabase.app',
+    root: 'beelal_coffee',
   },
 
   // ── Store Defaults ──────────────────────────────────────────────────────────
-  // Fallback values shown when Firebase has no data yet.
-  // Once saved via the Admin panel (Store tab), Firebase values take over permanently.
+  // Fallback values used when Firebase has no data yet.
+  // Once saved via the Admin panel, Firebase values take over permanently.
   store: {
-    name:     'My Coffee Shop',
-    slogan:   'Freshly brewed every morning',
-    phone:    'YOUR_WHATSAPP_NUMBER',  // Digits only, country code first. e.g. 60122203743
+    name:     'Beelal Coffee',
+    slogan:   'Medium Dark Roast · 100% Arabica',
+    phone:    '60122203743',
     hours:    '8:00 AM – 10:00 PM daily',
-    currency: 'RM',                    // Symbol shown before all prices  (RM, $, £, €, …)
+    currency: 'RM',
 
-    // Informational size chips shown above coffee/drink categories
-    sizeLegend: ['HOT 8oz', 'COLD 12oz', 'FRAPPÉ 16oz', 'LARGE +4'],
+    sizeLegend: ['HOT 8oz', 'COLD 12oz', 'FRAPPÉ 16oz', 'LARGE +RM4'],
 
-    // Display-only add-on rows shown at the bottom of the Food section
     foodAddons: [
       { name: 'Extra Double Shot', price: 4 },
       { name: 'Extra Cheese',      price: 2 },
@@ -38,26 +33,24 @@ const APP_CONFIG = {
 
   // ── App Branding ────────────────────────────────────────────────────────────
   brand: {
-    appName:   'My Coffee Shop',   // Shown in menu loader, page title, WhatsApp order footer
-    adminName: 'Admin Panel',      // Shown in admin topbar and PIN screen
-    locale:    'en-MY',            // Date/time locale  (en-US, en-GB, ms-MY, …)
+    appName:   'Beelal Coffee',
+    adminName: 'Beelal Admin',
+    locale:    'en-MY',
   },
 
   // ── AI Studio ───────────────────────────────────────────────────────────────
-  // Requires an OpenRouter API key (free tier available at openrouter.ai).
-  // Set the key via Admin → Dev tab after first login.
   ai: {
-    model: 'google/gemma-4-26b-it:free',   // Default OpenRouter model
+    model: 'google/gemma-4-26b-it:free',
 
-    systemPrompt: `You are a calm, precise assistant helping a small food & beverage business manage their digital menu and storefront appearance.
+    systemPrompt: `You are a calm, precise assistant for a small Malaysian coffee business called Beelal Coffee.
 
-PERSONA: Warm but efficient. Like a knowledgeable trusted advisor, not a chatbot. Think Jarvis — composed, helpful, never robotic. Never say sorry. Never say "As an AI". Never be sycophantic.
+PERSONA: Warm but efficient. Like a knowledgeable trusted advisor, not a chatbot. Think Jarvis — composed, helpful, never robotic. Adapt to the user's language naturally (Malay, English, or mix). Never say sorry. Never say "As an AI". Never be sycophantic.
 
 RESPONSE STRUCTURE (always follow this order):
-1. [Understood] — Brief restatement showing you understood
-2. [Action] — What action you are taking
-3. [Done] — Confirm what changed
-4. [Suggestion] — One optional enhancement suggestion (keep short)
+1. [Faham] — Brief restatement showing you understood
+2. [Buat] — What action you are taking
+3. [Siap] — Confirm what changed
+4. [Cadangan] — One optional enhancement suggestion (keep short)
 
 AMBIGUITY THRESHOLD — slot filling:
 Every request needs: WHAT (what to change) | WHERE (which section/element) | HOW (bold, italic, color, size) | CONSTRAINT (what not to touch)
@@ -83,20 +76,19 @@ Return a JSON object only, no explanation outside the JSON:
 
 CONTEXT: You receive full store state as YAML before each request. Use it to understand current values before making changes.
 
-LANGUAGE: Match the user's language. If mixed language, match the mix.`,
+LANGUAGE: Match user's language. If Malay or Kelantanese dialect, respond in warm standard Malay. If English, respond in English. If mixed, match the mix.`,
 
     quickChips: [
-      { label: '🌸 Seasonal Theme',  prompt: 'Retheme for the current season — warm and inviting tones' },
-      { label: '🎉 Festive Theme',   prompt: 'Apply a festive theme — bright, cheerful, celebratory colours' },
-      { label: '↩ Reset to Default', prompt: 'Reset all theme colours and fonts back to the original warm cream and espresso brown defaults' },
+      { label: '🌙 Raya Theme',      prompt: 'Retheme for Hari Raya Aidilfitri — festive green and gold tones' },
+      { label: '🎒 School Holidays', prompt: 'Retheme for school holidays — brighter, more cheerful and welcoming' },
+      { label: '↩ Reset to Default', prompt: 'Reset all theme colors and fonts back to original Beelal Coffee warm cream and espresso brown' },
       { label: '✏️ Change Slogan',   prompt: 'Change the slogan to: ' },
-      { label: '🚫 Category Off',    prompt: 'Mark all items in category [name] as sold out for today' },
+      { label: '🍝 Pasta Off',       prompt: 'Mark all pasta items as sold out for today' },
       { label: '✅ All Available',   prompt: 'Mark all menu items as available' },
     ],
   },
 
   // ── Default Theme ───────────────────────────────────────────────────────────
-  // Warm coffee-shop colour palette. Fully customisable via Admin → AI Studio.
   defaultTheme: {
     bg:           '#FEF7EE',
     bg2:          '#F9F0E1',
@@ -113,35 +105,76 @@ LANGUAGE: Match the user's language. If mixed language, match the mix.`,
   },
 
   // ── Default Menu ────────────────────────────────────────────────────────────
-  // Starter menu shown when Firebase has no menu data yet.
-  // Replace these sample items via the Admin panel (Menu tab) or edit here directly.
-  //
-  // Item fields:
-  //   id       — unique string (no spaces)
-  //   cat      — must match a category id below
-  //   name     — displayed name
-  //   desc     — short description (optional)
-  //   emoji    — fallback when no photo is set
-  //   hot/cold/frappe — prices for drink sizes (null = size not offered)
-  //   price    — fixed price for food items (null for drinks)
-  //   avail    — true = available, false = sold out
+  // Full Beelal Coffee menu — seeded to Firebase on first run if no data exists.
   defaultMenu: {
     categories: [
       { id: 'coffee',    label: 'Coffee',     emoji: '☕' },
       { id: 'noncoffee', label: 'Non-Coffee', emoji: '🥤' },
       { id: 'food',      label: 'Food',       emoji: '🥪' },
+      { id: 'pasta',     label: 'Pasta',      emoji: '🍝' },
+      { id: 'special',   label: 'Special',    emoji: '⭐' },
+      { id: 'friday',    label: 'Friday',     emoji: '🌟' },
     ],
     items: [
       // COFFEE
-      { id:'c1', cat:'coffee',    name:'Americano',     desc:'', emoji:'☕', hot:6,   cold:8,   frappe:10,  price:null, avail:true },
-      { id:'c2', cat:'coffee',    name:'Cafe Latte',    desc:'', emoji:'☕', hot:7,   cold:9,   frappe:12,  price:null, avail:true },
-      { id:'c3', cat:'coffee',    name:'Cappuccino',    desc:'', emoji:'☕', hot:7,   cold:9,   frappe:null,price:null, avail:true },
+      { id:'c1',  cat:'coffee',    name:'Americano',             desc:'', emoji:'☕', hot:6,   cold:8,   frappe:10,  price:null, avail:true },
+      { id:'c2',  cat:'coffee',    name:'Cafe Latte',            desc:'', emoji:'☕', hot:7,   cold:9,   frappe:12,  price:null, avail:true },
+      { id:'c3',  cat:'coffee',    name:'Cappuccino',            desc:'', emoji:'☕', hot:7,   cold:9,   frappe:null,price:null, avail:true },
+      { id:'c4',  cat:'coffee',    name:'Cafe Mocha',            desc:'', emoji:'☕', hot:9,   cold:11,  frappe:14,  price:null, avail:true },
+      { id:'c5',  cat:'coffee',    name:'Spanish Latte',         desc:'', emoji:'☕', hot:8,   cold:10,  frappe:13,  price:null, avail:true },
+      { id:'c6',  cat:'coffee',    name:'Hazelnut Latte',        desc:'', emoji:'☕', hot:8,   cold:10,  frappe:13,  price:null, avail:true },
+      { id:'c7',  cat:'coffee',    name:'Vanilla Latte',         desc:'', emoji:'☕', hot:8,   cold:10,  frappe:13,  price:null, avail:true },
+      { id:'c8',  cat:'coffee',    name:'Butterscotch Latte',    desc:'', emoji:'☕', hot:8,   cold:10,  frappe:13,  price:null, avail:true },
+      { id:'c9',  cat:'coffee',    name:'Brown Sugar Latte',     desc:'', emoji:'☕', hot:8,   cold:10,  frappe:13,  price:null, avail:true },
+      { id:'c10', cat:'coffee',    name:'Caramel Latte',         desc:'', emoji:'☕', hot:8,   cold:10,  frappe:13,  price:null, avail:true },
+      { id:'c11', cat:'coffee',    name:'Caramel Macchiato',     desc:'', emoji:'☕', hot:9,   cold:11,  frappe:14,  price:null, avail:true },
+      { id:'c12', cat:'coffee',    name:'Matcha Espresso',       desc:'', emoji:'🍵', hot:11,  cold:13,  frappe:16,  price:null, avail:true },
       // NON-COFFEE
-      { id:'n1', cat:'noncoffee', name:'Hot Chocolate', desc:'', emoji:'🍫', hot:6,   cold:8,   frappe:11,  price:null, avail:true },
-      { id:'n2', cat:'noncoffee', name:'Matcha Latte',  desc:'', emoji:'🍵', hot:8,   cold:10,  frappe:13,  price:null, avail:true },
-      // FOOD
-      { id:'f1', cat:'food',      name:'Club Sandwich', desc:'', emoji:'🥪', hot:null,cold:null,frappe:null,price:9.90, avail:true },
-      { id:'f2', cat:'food',      name:'Cheesy Fries',  desc:'', emoji:'🍟', hot:null,cold:null,frappe:null,price:7.90, avail:true },
+      { id:'n1',  cat:'noncoffee', name:'Dark Chocolate',        desc:'', emoji:'🍫', hot:6,   cold:8,   frappe:11,  price:null, avail:true },
+      { id:'n2',  cat:'noncoffee', name:'Dark Choc Hazelnut',    desc:'', emoji:'🍫', hot:8,   cold:10,  frappe:12,  price:null, avail:true },
+      { id:'n3',  cat:'noncoffee', name:'Double Choco Chips',    desc:'', emoji:'🍫', hot:null,cold:null,frappe:13,  price:null, avail:true },
+      { id:'n4',  cat:'noncoffee', name:'Matcha Latte',          desc:'', emoji:'🍵', hot:8,   cold:10,  frappe:13,  price:null, avail:true },
+      { id:'n5',  cat:'noncoffee', name:'Matcha Hazelnut',       desc:'', emoji:'🍵', hot:9,   cold:11,  frappe:14,  price:null, avail:true },
+      { id:'n6',  cat:'noncoffee', name:'Oreo Cookies',          desc:'', emoji:'🍪', hot:null,cold:null,frappe:13,  price:null, avail:true },
+      { id:'n7',  cat:'noncoffee', name:'Sparkling Strawberry',  desc:'', emoji:'🍓', hot:null,cold:10,  frappe:null,price:null, avail:true },
+      { id:'n8',  cat:'noncoffee', name:'Milky Strawberry',      desc:'', emoji:'🍓', hot:null,cold:12,  frappe:14,  price:null, avail:true },
+      { id:'n9',  cat:'noncoffee', name:'Matcha Strawberry',     desc:'', emoji:'🍵', hot:null,cold:16,  frappe:18,  price:null, avail:true },
+      // FOOD — baguette
+      { id:'f1',  cat:'food', name:'Scrambled Egg Baguette',  desc:'Baguette sandwich', emoji:'🥖', hot:null,cold:null,frappe:null,price:6.90,  avail:true },
+      { id:'f2',  cat:'food', name:'Herb Eggs Mayo Baguette', desc:'Baguette sandwich', emoji:'🥖', hot:null,cold:null,frappe:null,price:8.90,  avail:true },
+      { id:'f3',  cat:'food', name:'Tuna Mayo Baguette',      desc:'Baguette sandwich', emoji:'🥖', hot:null,cold:null,frappe:null,price:8.90,  avail:true },
+      { id:'f4',  cat:'food', name:'Creamy Chicken Mushroom', desc:'Baguette sandwich', emoji:'🥖', hot:null,cold:null,frappe:null,price:9.90,  avail:true },
+      { id:'f5',  cat:'food', name:'Chicken Slices Baguette', desc:'Baguette sandwich', emoji:'🥖', hot:null,cold:null,frappe:null,price:9.90,  avail:true },
+      // FOOD — club
+      { id:'f6',  cat:'food', name:'Scrambled Egg Club',      desc:'Club sandwich', emoji:'🥪', hot:null,cold:null,frappe:null,price:6.90,  avail:true },
+      { id:'f7',  cat:'food', name:'Herb Eggs Mayo Club',     desc:'Club sandwich', emoji:'🥪', hot:null,cold:null,frappe:null,price:8.90,  avail:true },
+      { id:'f8',  cat:'food', name:'Tuna Mayo Club',          desc:'Club sandwich', emoji:'🥪', hot:null,cold:null,frappe:null,price:8.90,  avail:true },
+      { id:'f9',  cat:'food', name:'Chicken Slices Club',     desc:'Club sandwich', emoji:'🥪', hot:null,cold:null,frappe:null,price:9.90,  avail:true },
+      // FOOD — appetizers
+      { id:'f10', cat:'food', name:'Toast Cheesy Sausage',    desc:'3 pcs', emoji:'🌭', hot:null,cold:null,frappe:null,price:11.00, avail:true },
+      { id:'f11', cat:'food', name:'Cheesy Fries',            desc:'',      emoji:'🍟', hot:null,cold:null,frappe:null,price:8.90,  avail:true },
+      { id:'f12', cat:'food', name:'Cheesy Wedges',           desc:'',      emoji:'🥔', hot:null,cold:null,frappe:null,price:8.90,  avail:true },
+      { id:'f13', cat:'food', name:'Tempura Chicken Nuggets', desc:'9 pcs', emoji:'🍗', hot:null,cold:null,frappe:null,price:9.90,  avail:true },
+      // PASTA
+      { id:'p1',  cat:'pasta', name:'Mac & Cheese',      desc:'',                   emoji:'🍝', hot:null,cold:null,frappe:null,price:10.00, avail:true },
+      { id:'p2',  cat:'pasta', name:'Creamy Chicken',    desc:'',                   emoji:'🍝', hot:null,cold:null,frappe:null,price:10.00, avail:true },
+      { id:'p3',  cat:'pasta', name:'Creamy Alfredo',    desc:'Spicy black pepper', emoji:'🍝', hot:null,cold:null,frappe:null,price:13.00, avail:true },
+      { id:'p4',  cat:'pasta', name:'Buttermilk Pasta',  desc:'Spicy',              emoji:'🍝', hot:null,cold:null,frappe:null,price:13.00, avail:true },
+      { id:'p5',  cat:'pasta', name:'Beef Bolognese',    desc:'',                   emoji:'🍝', hot:null,cold:null,frappe:null,price:13.00, avail:true },
+      { id:'p6',  cat:'pasta', name:'Creamy Mushroom',   desc:'',                   emoji:'🍄', hot:null,cold:null,frappe:null,price:13.00, avail:true },
+      { id:'p7',  cat:'pasta', name:'Carbonara',         desc:'',                   emoji:'🍝', hot:null,cold:null,frappe:null,price:12.00, avail:true },
+      { id:'p8',  cat:'pasta', name:'Swedish Meatballs', desc:'',                   emoji:'🍝', hot:null,cold:null,frappe:null,price:15.00, avail:true },
+      { id:'p9',  cat:'pasta', name:'Aglio Olio',        desc:'',                   emoji:'🍝', hot:null,cold:null,frappe:null,price:15.00, avail:true },
+      // SPECIAL
+      { id:'s1',  cat:'special', name:'Hainanese Chicken Chop',   desc:'', emoji:'🍽️', hot:null,cold:null,frappe:null,price:14.00, avail:true },
+      { id:'s2',  cat:'special', name:'Buttermilk Chicken Chop',  desc:'', emoji:'🍽️', hot:null,cold:null,frappe:null,price:15.00, avail:true },
+      { id:'s3',  cat:'special', name:'Black Pepper Chicken Chop',desc:'', emoji:'🍽️', hot:null,cold:null,frappe:null,price:15.00, avail:true },
+      { id:'s4',  cat:'special', name:'Fish & Chips',             desc:'', emoji:'🐟', hot:null,cold:null,frappe:null,price:19.90, avail:true },
+      { id:'s5',  cat:'special', name:'BC Chicken Tenders Ori',   desc:'Original', emoji:'🍗', hot:null,cold:null,frappe:null,price:15.00, avail:true },
+      { id:'s6',  cat:'special', name:'BC Chicken Tenders Spicy', desc:'Spicy',    emoji:'🌶️', hot:null,cold:null,frappe:null,price:16.00, avail:true },
+      // FRIDAY SPECIAL
+      { id:'fr1', cat:'friday', name:'Chicken Buttermilk Basmati', desc:'Friday only', emoji:'🍛', hot:null,cold:null,frappe:null,price:14.00, avail:true },
+      { id:'fr2', cat:'friday', name:'Chicken Chop Basmati',       desc:'Friday only', emoji:'🍛', hot:null,cold:null,frappe:null,price:15.00, avail:true },
     ],
   },
 };
