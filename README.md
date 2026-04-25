@@ -1,43 +1,87 @@
-# Beelal Coffee — Menu PWA
+# Coffee Shop Menu PWA — Reusable Template
 
-Customer menu: `index.html`  
-Admin panel: `admin.html`
+A zero-dependency, single-file menu PWA for small food & beverage businesses.
+Built on Firebase Realtime Database + Cloudflare Workers. No build step required.
 
-## Deploy to Cloudflare Pages
+## Files
 
-1. Push both files to GitHub repo `beelalcoffee`
-2. Cloudflare Dashboard → Pages → Create Project
-3. Connect to Git → select `beelalcoffee`
-4. Build settings:
-   - Framework preset: None
-   - Build command: (leave blank)
-   - Build output directory: /
-5. Save and Deploy
+| File | Purpose |
+|---|---|
+| `config.js` | **Edit this first** — all business-specific settings |
+| `index.html` | Customer-facing menu PWA |
+| `admin.html` | Owner/developer admin panel |
+| `guide.html` | Owner reference guide |
+| `wrangler.jsonc` | Cloudflare Workers deployment config |
 
-URL: `beelalcoffee.pages.dev`
+## Quick Start (New Deployment)
 
-Every push to `main` auto-deploys in ~30 seconds.
-No action needed from store owner on deployments.
+### 1. Firebase Setup
+1. Go to [console.firebase.google.com](https://console.firebase.google.com) and create a free project
+2. Enable **Realtime Database** → start in test mode
+3. Copy your database URL (e.g. `https://my-app-default-rtdb.firebaseio.com`)
 
-## First Time Setup (Developer)
+### 2. Edit `config.js`
+Open `config.js` and fill in:
+```js
+firebase: {
+  url:  'YOUR_FIREBASE_RTDB_URL',   // from step above
+  root: 'my_shop',                  // choose any namespace key
+},
+store: {
+  name:     'My Coffee Shop',
+  phone:    'YOUR_WHATSAPP_NUMBER', // e.g. 60122203743
+  currency: 'RM',                   // your currency symbol
+  ...
+},
+```
+Also update `brand.appName`, `brand.adminName`, and `brand.locale` to match your business.
 
-1. Open `admin.html`
-2. First run screen appears — set your 4-digit Dev PIN
-3. Log in with Dev PIN
-4. Go to **Dev** tab → paste OpenRouter API key → Test → Save
-5. **Dev** tab → Take Master Snapshot (factory reset baseline)
-6. **Security** tab → confirm Owner PIN is `1234`, change if needed
-7. Lock panel → share URL to store owner
+### 3. Update `wrangler.jsonc`
+Change the `name` field to your Cloudflare Workers project name.
 
-## Firebase
+### 4. Deploy to Cloudflare
+**Option A — Cloudflare Pages (recommended):**
+1. Push all files to a GitHub repository
+2. Cloudflare Dashboard → Pages → Create Project → Connect Git → select your repo
+3. Build settings: Framework preset = None, Build command = (blank), Output directory = `/`
+4. Save and Deploy — every push to `main` auto-deploys in ~30 seconds
 
-Project: ash-2026-photobook  
-RTDB: ash-2026-photobook-default-rtdb.asia-southeast1.firebasedatabase.app  
-Namespace: `beelal_coffee/` (separate from `duit_raya_2026/`)
+**Option B — Cloudflare Workers:**
+```bash
+npx wrangler deploy
+```
+
+### 5. First-Time Admin Setup
+1. Open `admin.html` in your browser
+2. First-run screen appears — set your 4-digit Developer PIN
+3. Log in with Developer PIN
+4. Go to **Dev** tab → paste your OpenRouter API key → Test → Save
+   *(Free key available at [openrouter.ai](https://openrouter.ai))*
+5. **Dev** tab → **Take Master Snapshot** (sets factory reset baseline)
+6. **Security** tab → confirm or change the Owner PIN (default: `1234`)
+7. Share the menu URL with customers and the admin URL with the store owner
+
+## Customising the Default Menu
+
+The starter menu (3 coffee drinks, 2 non-coffee drinks, 2 food items) is defined in `config.js` under `defaultMenu`. It is seeded to Firebase on first run.
+
+To replace it:
+- Edit `config.js → defaultMenu` before first deployment, **or**
+- Use the Admin panel (Menu tab) to add/edit items after deployment
 
 ## Recovery
 
-**Owner forgot PIN:** You log in with Dev PIN → Security tab → reset Owner PIN  
-**Complete theme disaster:** Log in with Dev PIN → AI Studio → Factory Reset  
-**File corrupted:** Push fresh files to GitHub — database untouched  
-**Debug errors:** Dev tab → Error Log (last 20 errors with timestamp)
+| Problem | Fix |
+|---|---|
+| Owner forgot PIN | Log in with Dev PIN → Security tab → reset Owner PIN |
+| Theme broken | Dev PIN → AI Studio → Factory Reset |
+| Want to redeploy | Push files to GitHub — database is unaffected |
+| Debug errors | Dev PIN → Dev tab → Error Log |
+
+## Architecture
+
+- **No build system** — vanilla HTML/CSS/JS, three static files
+- **Firebase Realtime Database** — stores menu, theme, config, orders, PINs
+- **Cloudflare Workers / Pages** — serves the static files globally
+- **OpenRouter** — AI gateway for the theme studio feature (optional)
+- **WhatsApp** — order delivery via `wa.me` deep link (no integration required)

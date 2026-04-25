@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0a0a0a">
-<title>Panduan Admin — Beelal Coffee</title>
+<title>Admin Guide</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -28,715 +28,287 @@
   --red2:     rgba(239,68,68,0.1);
   --purple:   #a855f7;
   --purple2:  rgba(168,85,247,0.1);
-  --gold:     #C8962A;
-  --r:        12px;
-  --r2:       8px;
-  --font:     'Plus Jakarta Sans', sans-serif;
-  --mono:     'JetBrains Mono', monospace;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;font-size:16px;}
-body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;padding:24px 20px 80px;max-width:700px;margin:0 auto;}
+h1{font-size:26px;font-weight:800;margin-bottom:4px;}
+h2{font-size:18px;font-weight:700;margin:32px 0 12px;display:flex;align-items:center;gap:8px;}
+h3{font-size:14px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em;margin:24px 0 10px;}
+p{margin-bottom:12px;font-size:15px;color:var(--text2);}
+strong{color:var(--text);font-weight:600;}
+code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:2px 6px;color:var(--amber);}
 
-/* ── NOISE TEXTURE ── */
-body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:0.4;}
+.subtitle{font-size:14px;color:var(--text3);margin-bottom:32px;}
+.toc{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:32px;}
+.toc-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-bottom:10px;}
+.toc a{display:block;font-size:14px;color:var(--text2);text-decoration:none;padding:4px 0;border-bottom:1px solid var(--border2);}
+.toc a:last-child{border-bottom:none;}
+.toc a:hover{color:var(--text);}
 
-/* ── LAYOUT ── */
-.wrap{max-width:720px;margin:0 auto;padding:0 20px;position:relative;z-index:1;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:16px;}
+.card-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.card-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.card-title{font-size:15px;font-weight:700;}
+.card-sub{font-size:12px;color:var(--text3);}
 
-/* ── HEADER ── */
-.site-header{padding:32px 0 0;margin-bottom:48px;}
-.header-eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text2);margin-bottom:20px;}
-.header-eyebrow span{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);}
-h1{font-size:clamp(28px,5vw,40px);font-weight:800;line-height:1.15;letter-spacing:-1px;color:var(--text);margin-bottom:12px;}
-h1 em{font-style:normal;background:linear-gradient(135deg,#C8962A,#f5d07a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.header-sub{font-size:15px;color:var(--text2);line-height:1.7;max-width:520px;}
-.header-links{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap;}
-.header-link{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:var(--r2);font-size:13px;font-weight:600;text-decoration:none;transition:all 0.15s;border:1px solid var(--border);}
-.header-link.primary{background:var(--text);color:var(--bg);}
-.header-link.primary:hover{opacity:0.9;}
-.header-link.ghost{color:var(--text2);background:none;}
-.header-link.ghost:hover{color:var(--text);border-color:rgba(255,255,255,0.2);}
+.step{display:flex;gap:12px;margin-bottom:10px;}
+.step-num{width:22px;height:22px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text2);flex-shrink:0;margin-top:2px;}
+.step-body{font-size:14px;color:var(--text2);}
 
-/* ── TOC ── */
-.toc{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:20px 24px;margin-bottom:48px;}
-.toc-title{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:14px;}
-.toc-list{display:flex;flex-direction:column;gap:2px;}
-.toc-item{display:flex;align-items:center;gap:12px;padding:7px 10px;border-radius:var(--r2);text-decoration:none;color:var(--text2);font-size:13px;font-weight:500;transition:all 0.15s;}
-.toc-item:hover{background:var(--bg3);color:var(--text);}
-.toc-num{font-family:var(--mono);font-size:10px;color:var(--text3);min-width:20px;}
-.toc-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;margin:2px 2px;}
+.badge.green{background:var(--green2);color:var(--green);}
+.badge.blue{background:var(--blue2);color:var(--blue);}
+.badge.amber{background:var(--amber2);color:var(--amber);}
+.badge.red{background:var(--red2);color:var(--red);}
+.badge.purple{background:var(--purple2);color:var(--purple);}
 
-/* ── SECTION ── */
-.section{margin-bottom:56px;scroll-margin-top:24px;}
-.section-label{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:12px;}
-.section-label::before{content:'';width:16px;height:1px;background:var(--text3);}
-h2{font-size:22px;font-weight:800;letter-spacing:-0.5px;color:var(--text);margin-bottom:6px;}
-.section-intro{font-size:14px;color:var(--text2);line-height:1.75;margin-bottom:24px;}
+.mockup{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin:12px 0;font-size:13px;}
+.mockup-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border2);}
+.mockup-row:last-child{border-bottom:none;}
+.mockup-label{color:var(--text2);}
+.mockup-val{color:var(--text);font-weight:600;}
 
-/* ── STEP CARD ── */
-.steps{display:flex;flex-direction:column;gap:3px;}
-.step{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;transition:border-color 0.2s;}
-.step:hover{border-color:var(--border);}
-.step-header{display:flex;align-items:flex-start;gap:14px;padding:16px 18px;cursor:pointer;}
-.step-num{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:500;flex-shrink:0;margin-top:1px;}
-.step-num.green{background:var(--green2);color:var(--green);}
-.step-num.blue{background:var(--blue2);color:var(--blue);}
-.step-num.amber{background:var(--amber2);color:var(--amber);}
-.step-num.purple{background:var(--purple2);color:var(--purple);}
-.step-num.red{background:var(--red2);color:var(--red);}
-.step-title{font-size:14px;font-weight:600;color:var(--text);flex:1;line-height:1.4;}
-.step-sub{font-size:12px;color:var(--text2);margin-top:2px;font-weight:400;}
-.step-body{padding:0 18px 16px 60px;font-size:13px;color:var(--text2);line-height:1.75;}
-.step-body p{margin-bottom:8px;}
-.step-body p:last-child{margin-bottom:0;}
+.tip{background:var(--blue2);border:1px solid rgba(59,130,246,0.2);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--text2);margin:10px 0;}
+.tip strong{color:var(--blue);}
 
-/* ── CALLOUT ── */
-.callout{border-radius:var(--r2);padding:14px 16px;margin:12px 0;display:flex;gap:12px;align-items:flex-start;}
-.callout.tip{background:var(--green2);border:1px solid rgba(34,197,94,0.2);}
-.callout.warn{background:var(--amber2);border:1px solid rgba(245,158,11,0.2);}
-.callout.info{background:var(--blue2);border:1px solid rgba(59,130,246,0.2);}
-.callout.note{background:var(--bg3);border:1px solid var(--border);}
-.callout-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
-.callout-text{font-size:12.5px;line-height:1.65;}
-.callout.tip .callout-text{color:#86efac;}
-.callout.warn .callout-text{color:#fcd34d;}
-.callout.info .callout-text{color:#93c5fd;}
-.callout.note .callout-text{color:var(--text2);}
-.callout-text strong{color:var(--text);}
+.warn{background:var(--amber2);border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--text2);margin:10px 0;}
+.warn strong{color:var(--amber);}
 
-/* ── PATH VISUAL ── */
-.path{display:flex;flex-direction:column;gap:0;margin:16px 0;}
-.path-item{display:flex;align-items:flex-start;gap:14px;position:relative;}
-.path-item::before{content:'';position:absolute;left:15px;top:32px;bottom:-4px;width:1px;background:var(--border);z-index:0;}
-.path-item:last-child::before{display:none;}
-.path-dot{width:30px;height:30px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;z-index:1;position:relative;}
-.path-content{padding-bottom:20px;flex:1;}
-.path-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;}
-.path-desc{font-size:12px;color:var(--text2);line-height:1.6;}
-
-/* ── TAB ILLUSTRATION ── */
-.tab-illustration{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin:16px 0;}
-.tab-bar{display:flex;background:var(--bg3);border-bottom:1px solid var(--border);padding:0 12px;overflow-x:auto;scrollbar-width:none;}
-.tab-bar::-webkit-scrollbar{display:none;}
-.tab-item{padding:10px 14px;font-size:11px;font-weight:600;letter-spacing:0.3px;color:var(--text3);white-space:nowrap;border-bottom:2px solid transparent;cursor:pointer;transition:all 0.15s;}
-.tab-item.active{color:var(--gold);border-bottom-color:var(--gold);}
-.tab-content{padding:16px;}
-
-/* ── FIELD MOCK ── */
-.field-mock{margin-bottom:10px;}
-.field-label-mock{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:5px;}
-.field-input-mock{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);padding:9px 12px;font-size:12px;color:var(--text2);display:flex;align-items:center;justify-content:space-between;}
-.field-input-mock .placeholder{color:var(--text3);}
-.field-input-mock .value{color:var(--text);}
-.field-input-mock .edit-icon{font-size:11px;color:var(--text3);}
-.toggle-mock{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);margin-bottom:6px;}
-.toggle-mock-label{font-size:13px;color:var(--text);}
-.toggle-on{width:42px;height:22px;background:#22c55e;border-radius:11px;position:relative;}
-.toggle-on::after{content:'';position:absolute;right:3px;top:3px;width:16px;height:16px;background:#fff;border-radius:50%;}
-.toggle-off{width:42px;height:22px;background:var(--bg4);border:1px solid var(--border);border-radius:11px;position:relative;}
-.toggle-off::after{content:'';position:absolute;left:3px;top:3px;width:16px;height:16px;background:var(--text3);border-radius:50%;}
-
-/* ── MENU ITEM MOCK ── */
-.mir-mock{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r2);padding:10px 12px;display:flex;align-items:center;gap:10px;margin-bottom:4px;}
-.mir-emoji-mock{font-size:18px;}
-.mir-body-mock{flex:1;}
-.mir-name-mock{font-size:12px;font-weight:600;color:var(--text);}
-.mir-price-mock{font-size:11px;color:var(--gold);font-weight:700;}
-.mir-btns-mock{display:flex;gap:4px;}
-.mir-btn-mock{padding:4px 8px;border-radius:6px;border:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text2);}
-.mir-btn-mock.sold{color:var(--red);border-color:rgba(239,68,68,0.3);}
-.mir-btn-mock.enable{color:var(--green);border-color:rgba(34,197,94,0.3);}
-
-/* ── AI CHAT MOCK ── */
-.chat-mock{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin:16px 0;}
-.chat-mock-messages{padding:14px;display:flex;flex-direction:column;gap:8px;}
-.msg-user-mock{background:var(--gold);color:var(--bg);padding:8px 12px;border-radius:12px 12px 2px 12px;font-size:12px;align-self:flex-end;max-width:80%;}
-.msg-ai-mock{background:var(--bg3);border:1px solid var(--border2);color:var(--text2);padding:8px 12px;border-radius:12px 12px 12px 2px;font-size:12px;align-self:flex-start;max-width:85%;line-height:1.6;}
-.msg-ai-mock strong{color:var(--text);}
-.chat-mock-input{border-top:1px solid var(--border);padding:10px 12px;display:flex;gap:8px;align-items:center;background:var(--bg3);}
-.chat-mock-field{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:7px 14px;font-size:12px;color:var(--text3);}
-.chat-mock-send{width:32px;height:32px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;}
-
-/* ── CODE BLOCK ── */
-.code-block{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);padding:12px 14px;font-family:var(--mono);font-size:12px;color:#86efac;margin:10px 0;line-height:1.7;overflow-x:auto;}
-.code-block .comment{color:var(--text3);}
-.code-block .key{color:#93c5fd;}
-.code-block .val{color:#fde68a;}
-
-/* ── URL CHIP ── */
-.url-chip{display:inline-flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);padding:8px 14px;font-family:var(--mono);font-size:12px;color:var(--text2);margin:8px 0;}
-.url-chip .url-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);}
-
-/* ── BADGE ── */
-.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:0.3px;}
-.badge-green{background:var(--green2);color:var(--green);}
-.badge-amber{background:var(--amber2);color:var(--amber);}
-.badge-blue{background:var(--blue2);color:var(--blue);}
-.badge-red{background:var(--red2);color:var(--red);}
-.badge-purple{background:var(--purple2);color:var(--purple);}
-
-/* ── DB SECTION ── */
-.db-tree{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;font-family:var(--mono);font-size:12px;line-height:2;}
-.db-root{color:var(--text2);}
-.db-key{color:#93c5fd;}
-.db-val{color:#fde68a;}
-.db-comment{color:var(--text3);font-size:11px;}
-.db-indent{padding-left:20px;}
-.db-indent2{padding-left:40px;}
-
-/* ── DIVIDER ── */
-.section-divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:48px 0;}
-
-/* ── FOOTER ── */
-.footer{padding:32px 0 48px;border-top:1px solid var(--border2);}
-.footer-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
-.footer-brand{font-size:13px;font-weight:700;color:var(--text2);}
-.footer-brand span{color:var(--gold);}
-.footer-note{font-size:11px;color:var(--text3);}
-
-/* ── ANIMATIONS ── */
-@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
-.section{animation:fadeUp 0.4s ease both;}
-.section:nth-child(2){animation-delay:0.05s;}
-.section:nth-child(3){animation-delay:0.1s;}
-.section:nth-child(4){animation-delay:0.15s;}
-
-/* ── RESPONSIVE ── */
-@media(max-width:480px){
-  .header-links{flex-direction:column;}
-  .header-link{justify-content:center;}
-}
+section{scroll-margin-top:20px;}
+hr{border:none;border-top:1px solid var(--border);margin:32px 0;}
 </style>
 </head>
 <body>
-<div class="wrap">
 
-<!-- HEADER -->
-<header class="site-header">
-  <div class="header-eyebrow"><span></span> Panduan Rasmi · Beelal Coffee Admin</div>
-  <h1>Semua yang awak<br>perlu tahu untuk<br>urus <em>Beelal Coffee</em></h1>
-  <p class="header-sub">Panduan lengkap dalam Bahasa Malaysia — dari buka kedai pagi sampai tukar menu, semua ada di sini. Baca sekali, paham seumur hidup.</p>
-  <div class="header-links">
-    <a class="header-link primary" href="https://beelalcoffeev0.arh-homelab.workers.dev" target="_blank">🌐 Buka Menu Pelanggan</a>
-    <a class="header-link ghost" href="https://beelalcoffeev0.arh-homelab.workers.dev/admin" target="_blank">⚙ Buka Panel Admin</a>
+<h1>Admin Panel Guide</h1>
+<p class="subtitle">How to manage your digital menu and store settings.</p>
+
+<div class="toc">
+  <div class="toc-title">Contents</div>
+  <a href="#logging-in">1 · Logging In</a>
+  <a href="#store-tab">2 · Opening &amp; Closing the Store</a>
+  <a href="#menu-tab">3 · Managing the Menu</a>
+  <a href="#orders-tab">4 · Viewing Orders</a>
+  <a href="#ai-studio">5 · AI Studio (Theme &amp; Appearance)</a>
+  <a href="#security-tab">6 · Security &amp; PINs</a>
+  <a href="#recovery">7 · Recovery &amp; Troubleshooting</a>
+</div>
+
+<!-- ── 1. LOGGING IN ──────────────────────────────────── -->
+<section id="logging-in">
+<h2>🔐 Logging In</h2>
+<p>Open <strong>admin.html</strong> on your phone or computer. You will see a PIN entry screen.</p>
+
+<div class="card">
+  <div class="card-head">
+    <div class="card-icon" style="background:var(--green2);">🏪</div>
+    <div><div class="card-title">Owner PIN</div><div class="card-sub">4-digit PIN set by your developer</div></div>
   </div>
-</header>
+  <p style="margin:0;font-size:14px;">Access to: Store settings, Menu management, Orders, AI Studio.</p>
+</div>
 
-<!-- TOC -->
-<nav class="toc">
-  <div class="toc-title">Isi Kandungan</div>
-  <div class="toc-list">
-    <a class="toc-item" href="#login"><span class="toc-num">01</span><span class="toc-dot" style="background:#22c55e"></span>Log Masuk Panel Admin</a>
-    <a class="toc-item" href="#store"><span class="toc-num">02</span><span class="toc-dot" style="background:#3b82f6"></span>Tetapan Kedai — Buka, Tutup & Waktu</a>
-    <a class="toc-item" href="#menu"><span class="toc-num">03</span><span class="toc-dot" style="background:#f59e0b"></span>Urus Menu — Tambah, Edit, Sold Out</a>
-    <a class="toc-item" href="#orders"><span class="toc-num">04</span><span class="toc-dot" style="background:#a855f7"></span>Rekod Pesanan</a>
-    <a class="toc-item" href="#ai"><span class="toc-num">05</span><span class="toc-dot" style="background:#C8962A"></span>AI Studio — Ubah Reka Bentuk</a>
-    <a class="toc-item" href="#template"><span class="toc-num">06</span><span class="toc-dot" style="background:#ec4899"></span>Muat Naik Template Baru</a>
-    <a class="toc-item" href="#database"><span class="toc-num">07</span><span class="toc-dot" style="background:#ef4444"></span>Tentang Database</a>
+<div class="card">
+  <div class="card-head">
+    <div class="card-icon" style="background:var(--purple2);">🛠️</div>
+    <div><div class="card-title">Developer PIN</div><div class="card-sub">Set by the developer on first run</div></div>
   </div>
-</nav>
+  <p style="margin:0;font-size:14px;">Everything above, plus: Dev tools, AI model settings, error logs, master theme snapshot.</p>
+</div>
 
-<!-- ══════════════════════════════════════════ -->
-<!-- 01 — LOGIN -->
-<!-- ══════════════════════════════════════════ -->
-<section class="section" id="login">
-  <div class="section-label">01</div>
-  <h2>Log Masuk Panel Admin</h2>
-  <p class="section-intro">Panel admin hanya boleh diakses oleh awak. Tiada sesiapa lain yang boleh masuk tanpa PIN. Ada dua cara nak buka — bergantung pada peranti.</p>
-
-  <div class="steps">
-    <div class="step">
-      <div class="step-header">
-        <div class="step-num green">01</div>
-        <div><div class="step-title">Buka URL panel admin</div><div class="step-sub">Guna browser pada telefon atau komputer</div></div>
-      </div>
-      <div class="step-body">
-        <div class="url-chip"><span class="url-dot"></span>beelalcoffeev0.arh-homelab.workers.dev/admin</div>
-        <div class="callout info">
-          <div class="callout-icon">ℹ️</div>
-          <div class="callout-text"><strong>Kali pertama pada peranti baru</strong> — skrin akan minta emel. Masukkan emel Gmail awak, Rahman akan hantar kod 6 digit. Masukkan kod tu untuk teruskan. Lepas tu, terus ke skrin PIN seperti biasa.</div>
-        </div>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-header">
-        <div class="step-num green">02</div>
-        <div><div class="step-title">Masukkan PIN 4 digit awak</div><div class="step-sub">PIN owner: 1234 (tukar selepas log masuk pertama)</div></div>
-      </div>
-      <div class="step-body">
-        <p>Tekan nombor satu persatu. Panel akan buka sendiri bila 4 digit dah masuk — tak perlu tekan butang lain.</p>
-        <div class="callout warn">
-          <div class="callout-icon">⚠️</div>
-          <div class="callout-text"><strong>Tukar PIN sekarang.</strong> Pergi tab <strong>Security</strong> → masukkan PIN baru → Confirm → Save. Jangan guna 1234 untuk jangka panjang.</div>
-        </div>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-header">
-        <div class="step-num green">03</div>
-        <div><div class="step-title">Nak kunci balik?</div><div class="step-sub">Tekan butang "Lock" di penjuru kanan atas</div></div>
-      </div>
-      <div class="step-body">
-        <p>Panel akan kembali ke skrin PIN. Selamat — tiada siapa boleh ubah apa-apa tanpa PIN awak.</p>
-      </div>
-    </div>
-  </div>
+<div class="tip"><strong>Tip:</strong> If you enter the wrong PIN, wait 2 seconds and try again. PINs are stored securely in the database — not in the browser.</div>
 </section>
 
-<div class="section-divider"></div>
+<hr>
 
-<!-- ══════════════════════════════════════════ -->
-<!-- 02 — STORE -->
-<!-- ══════════════════════════════════════════ -->
-<section class="section" id="store">
-  <div class="section-label">02</div>
-  <h2>Tetapan Kedai</h2>
-  <p class="section-intro">Tab <strong>Store</strong> adalah tempat awak kawal status kedai, waktu operasi, dan nombor WhatsApp. Sebarang perubahan akan tersebar ke menu pelanggan dalam masa beberapa saat.</p>
+<!-- ── 2. STORE TAB ───────────────────────────────────── -->
+<section id="store-tab">
+<h2>🏪 Opening &amp; Closing the Store</h2>
+<p>The <strong>Store</strong> tab controls whether customers see an "Open" or "Closed" banner on the menu page.</p>
 
-  <div class="tab-illustration">
-    <div class="tab-bar">
-      <div class="tab-item active">Store</div>
-      <div class="tab-item">Menu</div>
-      <div class="tab-item">Orders</div>
-      <div class="tab-item">Security</div>
-      <div class="tab-item">AI Studio</div>
-    </div>
-    <div class="tab-content">
-      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:10px">Live Status</div>
-      <div class="toggle-mock">
-        <div>
-          <div class="toggle-mock-label">Store is Open</div>
-          <div style="font-size:11px;color:var(--text3);margin-top:2px">Pelanggan nampak status Buka / Tutup</div>
-        </div>
-        <div class="toggle-on"></div>
-      </div>
-      <div style="height:10px"></div>
-      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:10px">Store Info</div>
-      <div class="field-mock"><div class="field-label-mock">Waktu Operasi</div><div class="field-input-mock"><span class="value">8:00 AM – 10:00 PM daily</span><span class="edit-icon">✎</span></div></div>
-      <div class="field-mock"><div class="field-label-mock">WhatsApp Number</div><div class="field-input-mock"><span class="value">60122203743</span><span class="edit-icon">✎</span></div></div>
-    </div>
-  </div>
+<h3>Toggle Open / Closed</h3>
+<div class="step"><div class="step-num">1</div><div class="step-body">Log in with your Owner PIN.</div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body">Tap the <strong>Store</strong> tab (first tab at the top).</div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body">Press <strong>Open Store</strong> or <strong>Close Store</strong> — the change takes effect immediately for all customers.</div></div>
 
-  <div class="steps">
-    <div class="step">
-      <div class="step-header">
-        <div class="step-num blue">☀️</div>
-        <div><div class="step-title">Buka kedai setiap pagi</div><div class="step-sub">Toggle "Store is Open" → On (hijau)</div></div>
-      </div>
-      <div class="step-body">
-        <p>Pelanggan akan nampak badge hijau "Open" pada menu mereka. Pesanan boleh dibuat.</p>
-        <div class="callout tip">
-          <div class="callout-icon">✅</div>
-          <div class="callout-text">Perubahan ni <strong>terus hidup</strong> — tak perlu reload apa-apa. Pelanggan yang dah buka menu pun akan nampak status baru bila mereka refresh.</div>
-        </div>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-header">
-        <div class="step-num blue">🌙</div>
-        <div><div class="step-title">Tutup kedai bila habis operasi</div><div class="step-sub">Toggle "Store is Open" → Off (kelabu)</div></div>
-      </div>
-      <div class="step-body">
-        <p>Banner merah "We're currently closed" akan muncul pada menu pelanggan. Ini menggantikan status WhatsApp yang awak selalu tukar secara manual dulu.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-header">
-        <div class="step-num blue">📱</div>
-        <div><div class="step-title">Tukar nombor WhatsApp</div><div class="step-sub">Field "WhatsApp Number" → Save Store Info</div></div>
-      </div>
-      <div class="step-body">
-        <p>Format: <code style="font-family:var(--mono);background:var(--bg3);padding:1px 6px;border-radius:4px;font-size:12px">60122203743</code> — tanpa +, tanpa sengkang, dengan kod negara Malaysia (60).</p>
-        <div class="callout warn">
-          <div class="callout-icon">⚠️</div>
-          <div class="callout-text">Kalau nombor salah, pesanan pelanggan akan hantar ke nombor yang salah. Pastikan betul sebelum save.</div>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="warn"><strong>Important:</strong> This does not stop customers from placing orders — it just shows a warning banner. You can still receive WhatsApp orders when "closed".</div>
+
+<h3>Updating Store Info</h3>
+<p>In the Store tab you can edit:</p>
+<div class="mockup">
+  <div class="mockup-row"><span class="mockup-label">Store Name</span><span class="mockup-val">Displayed at the top of the menu</span></div>
+  <div class="mockup-row"><span class="mockup-label">Slogan</span><span class="mockup-val">Short tagline below the name</span></div>
+  <div class="mockup-row"><span class="mockup-label">Opening Hours</span><span class="mockup-val">Shown in the menu header bar</span></div>
+  <div class="mockup-row"><span class="mockup-label">WhatsApp Number</span><span class="mockup-val">Country code + digits only, e.g. 60122203743</span></div>
+  <div class="mockup-row"><span class="mockup-label">Logo URL</span><span class="mockup-val">Optional — link to an image (HTTPS)</span></div>
+</div>
+<p>After making changes, tap <strong>Save Store Info</strong>. Changes are visible to customers immediately.</p>
 </section>
 
-<div class="section-divider"></div>
+<hr>
 
-<!-- ══════════════════════════════════════════ -->
-<!-- 03 — MENU -->
-<!-- ══════════════════════════════════════════ -->
-<section class="section" id="menu">
-  <div class="section-label">03</div>
-  <h2>Urus Menu</h2>
-  <p class="section-intro">Tab <strong>Menu</strong> adalah tempat awak tambah item baru, edit harga, dan tandakan item yang dah habis stok.</p>
+<!-- ── 3. MENU TAB ───────────────────────────────────── -->
+<section id="menu-tab">
+<h2>📋 Managing the Menu</h2>
+<p>The <strong>Menu</strong> tab lets you add, edit, delete, and mark items as sold out.</p>
 
-  <!-- Mark sold out -->
-  <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px">Tandakan Item Habis Stok</div>
-  <div class="mir-mock">
-    <div class="mir-emoji-mock">🍝</div>
-    <div class="mir-body-mock"><div class="mir-name-mock">Beef Bolognese</div><div class="mir-price-mock">RM 13.00</div></div>
-    <div class="mir-btns-mock">
-      <div class="mir-btn-mock sold">Sold Out</div>
-      <div class="mir-btn-mock">Edit</div>
-      <div class="mir-btn-mock">Del</div>
-    </div>
-  </div>
-  <div class="mir-mock" style="opacity:0.45">
-    <div class="mir-emoji-mock">🍝</div>
-    <div class="mir-body-mock"><div class="mir-name-mock">Carbonara</div><div class="mir-price-mock">RM 12.00</div><div style="font-size:10px;color:var(--red);font-weight:700;margin-top:2px">SOLD OUT</div></div>
-    <div class="mir-btns-mock">
-      <div class="mir-btn-mock enable">Enable</div>
-      <div class="mir-btn-mock">Edit</div>
-      <div class="mir-btn-mock">Del</div>
-    </div>
-  </div>
+<h3>Mark an Item as Sold Out</h3>
+<div class="step"><div class="step-num">1</div><div class="step-body">Find the item in the menu list.</div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body">Tap <strong>Sold Out</strong>. The item stays visible on the menu but is greyed out with a "Sold Out" badge — customers cannot order it.</div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body">Tap <strong>Enable</strong> to make it available again.</div></div>
 
-  <div class="callout note" style="margin-bottom:20px">
-    <div class="callout-icon">📌</div>
-    <div class="callout-text"><strong>Sold Out</strong> — item akan kelabu pada menu pelanggan, tak boleh tambah ke troli.<br><strong>Enable</strong> — hidupkan balik item bila dah ada stok.</div>
-  </div>
+<h3>Add a New Item</h3>
+<div class="step"><div class="step-num">1</div><div class="step-body">Tap <strong>+ Add Item</strong> at the top of the Menu tab.</div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body">Fill in the item name, category, emoji, and description.</div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body">
+  For <strong>drinks</strong>: enter prices for Hot, Cold, and/or Frappé sizes. Leave a size blank to hide it.<br>
+  For <strong>food</strong>: enter a single fixed price.
+</div></div>
+<div class="step"><div class="step-num">4</div><div class="step-body">Optionally add a photo (JPG or PNG — it will be resized to 500px automatically).</div></div>
+<div class="step"><div class="step-num">5</div><div class="step-body">Tap <strong>Add Item</strong> to save.</div></div>
 
-  <div class="steps">
-    <div class="step">
-      <div class="step-header">
-        <div class="step-num amber">➕</div>
-        <div><div class="step-title">Tambah item baru</div><div class="step-sub">Butang "+ Add Item" di bahagian atas tab Menu</div></div>
-      </div>
-      <div class="step-body">
-        <p>Form akan muncul. Isi butiran:</p>
-        <div class="path">
-          <div class="path-item"><div class="path-dot">📂</div><div class="path-content"><div class="path-title">Category</div><div class="path-desc">Pilih: Coffee, Non-Coffee, Food, Pasta, Special, atau Friday</div></div></div>
-          <div class="path-item"><div class="path-dot">📝</div><div class="path-content"><div class="path-title">Name & Description</div><div class="path-desc">Nama item dan huraian ringkas (contoh: "Spicy", "Club sandwich")</div></div></div>
-          <div class="path-item"><div class="path-dot">💰</div><div class="path-content"><div class="path-title">Harga</div><div class="path-desc"><strong>Minuman:</strong> isi Hot, Cold, Frappé (yang ada sahaja)<br><strong>Makanan:</strong> isi Fixed Price sahaja</div></div></div>
-          <div class="path-item"><div class="path-dot">✅</div><div class="path-content"><div class="path-title">Tekan "Add Item"</div><div class="path-desc">Item terus muncul dalam menu pelanggan</div></div></div>
-        </div>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-header">
-        <div class="step-num amber">✏️</div>
-        <div><div class="step-title">Edit harga atau nama</div><div class="step-sub">Butang "Edit" pada mana-mana item</div></div>
-      </div>
-      <div class="step-body">
-        <p>Sheet akan muncul dari bawah. Tukar nilai yang perlu → tekan <strong>"Save Changes"</strong>. Perubahan hidup terus.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-header">
-        <div class="step-num amber">🗑️</div>
-        <div><div class="step-title">Padam item</div><div class="step-sub">Butang "Del" → confirm</div></div>
-      </div>
-      <div class="step-body">
-        <p>Item dipadam terus dari menu dan database. <strong>Ini tidak boleh diundo.</strong> Kalau nak sembunyi sementara, guna Sold Out sahaja.</p>
-        <div class="callout warn">
-          <div class="callout-icon">⚠️</div>
-          <div class="callout-text">Guna <strong>Sold Out</strong> kalau nak tutup item buat sementara. Guna <strong>Del</strong> hanya kalau item tu betul-betul dah takde dalam menu selama-lamanya.</div>
-        </div>
-      </div>
-    </div>
-  </div>
+<h3>Edit an Item</h3>
+<p>Tap <strong>Edit</strong> next to any item. Change the fields you want, then tap <strong>Save</strong>.</p>
+
+<h3>Delete an Item</h3>
+<p>Tap <strong>Del</strong> next to an item, then confirm. This cannot be undone.</p>
+
+<h3>Manage Categories</h3>
+<p>Categories appear as horizontal tabs on the menu page. In the Menu tab, scroll down to the <strong>Categories</strong> section to:</p>
+<ul style="font-size:14px;color:var(--text2);padding-left:20px;margin-bottom:12px;">
+  <li>Edit a category's name or emoji</li>
+  <li>Delete an empty category (categories with items cannot be deleted)</li>
+  <li>Add a new category</li>
+</ul>
+
+<div class="tip"><strong>Tip:</strong> Category order on the menu follows the order they appear in the Admin categories list.</div>
+
+<h3>Add-ons &amp; Options</h3>
+<p>When editing an item, scroll to <strong>Options / Add-ons</strong>. Two types are available:</p>
+<div class="card">
+  <div class="card-title" style="margin-bottom:6px;">Choice (required)</div>
+  <p style="margin:0;font-size:14px;color:var(--text2);">A dropdown the customer must pick before adding to cart — e.g. sauce type, spice level. No extra price.</p>
+</div>
+<div class="card">
+  <div class="card-title" style="margin-bottom:6px;">Optional (checkbox + price)</div>
+  <p style="margin:0;font-size:14px;color:var(--text2);">A checkbox the customer can optionally tick — e.g. "Extra Cheese". Set the extra price in the price field.</p>
+</div>
 </section>
 
-<div class="section-divider"></div>
+<hr>
 
-<!-- ══════════════════════════════════════════ -->
-<!-- 04 — ORDERS -->
-<!-- ══════════════════════════════════════════ -->
-<section class="section" id="orders">
-  <div class="section-label">04</div>
-  <h2>Rekod Pesanan</h2>
-  <p class="section-intro">Tab <strong>Orders</strong> menyimpan semua pesanan yang masuk melalui butang WhatsApp pada menu. Berguna untuk semak balik pesanan kalau ada keliru.</p>
+<!-- ── 4. ORDERS TAB ─────────────────────────────────── -->
+<section id="orders-tab">
+<h2>📦 Viewing Orders</h2>
+<p>The <strong>Orders</strong> tab shows a log of all orders customers sent via WhatsApp, newest first.</p>
+<p>Each order entry shows: customer name, timestamp, items ordered (with sizes), and total amount.</p>
 
-  <div class="steps">
-    <div class="step">
-      <div class="step-header">
-        <div class="step-num purple">📋</div>
-        <div><div class="step-title">Semak pesanan terkini</div><div class="step-sub">Tekan "↻ Refresh" untuk muat semula</div></div>
-      </div>
-      <div class="step-body">
-        <p>Setiap rekod menunjukkan nama pelanggan, item yang dipesan, jumlah harga, masa pesanan, dan nota khas (kalau ada).</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-header">
-        <div class="step-num purple">💾</div>
-        <div><div class="step-title">Had simpanan: 1,000 pesanan</div><div class="step-sub">Pesanan paling lama akan dipadam automatik</div></div>
-      </div>
-      <div class="step-body">
-        <p>Sistem simpan 1,000 pesanan terbaru. Bila dah penuh, pesanan paling lama dipadam sendiri. Awak tak perlu buat apa-apa.</p>
-        <div class="callout note">
-          <div class="callout-icon">📌</div>
-          <div class="callout-text">Tab Orders adalah <strong>rekod rujukan sahaja</strong>. Pesanan masuk melalui WhatsApp seperti biasa — awak masih terima dalam chat WhatsApp awak.</div>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="tip"><strong>Tip:</strong> This is a read-only log for reference. Actual order fulfilment happens through WhatsApp — the customer sends the order message and you reply or prepare from there.</div>
+
+<p>Tap <strong>Refresh</strong> to reload the latest orders. Orders are stored for up to 1,000 entries before the oldest are removed.</p>
 </section>
 
-<div class="section-divider"></div>
+<hr>
 
-<!-- ══════════════════════════════════════════ -->
-<!-- 05 — AI STUDIO -->
-<!-- ══════════════════════════════════════════ -->
-<section class="section" id="ai">
-  <div class="section-label">05</div>
-  <h2>AI Studio</h2>
-  <p class="section-intro">AI Studio membolehkan awak ubah reka bentuk menu — warna, font, suasana — hanya dengan menaip apa yang awak mahukan. Tak perlu tahu coding langsung.</p>
+<!-- ── 5. AI STUDIO ──────────────────────────────────── -->
+<section id="ai-studio">
+<h2>🤖 AI Studio</h2>
+<p>AI Studio (available with the Developer PIN) lets you change the look of the menu — colours, fonts, theme — using plain-language instructions or by uploading a design template.</p>
 
-  <div class="chat-mock">
-    <div class="chat-mock-messages">
-      <div class="msg-user-mock">font kat non-coffee tu buat bold sikit boleh?</div>
-      <div class="msg-ai-mock"><strong>Faham</strong> — nak font nama item di bahagian Non-Coffee jadi lebih tebal.<br><br><strong>Buat</strong> — tukar font-weight pada .card-name dalam #sec-noncoffee kepada semibold (600).<br><br><strong>Siap</strong> — perubahan dah disimpan. Reload menu pelanggan untuk tengok hasilnya.<br><br>💡 Nak cuba italic sekali untuk kesan lebih elegan?</div>
-    </div>
-    <div class="chat-mock-input">
-      <div class="chat-mock-field">Taip apa yang nak diubah...</div>
-      <div class="chat-mock-send">➤</div>
-    </div>
-  </div>
+<div class="warn"><strong>Requires:</strong> An OpenRouter API key. Set it once in the <strong>Dev</strong> tab → <em>API Key</em> field. Free-tier keys are available at <code>openrouter.ai</code>.</div>
 
-  <div class="steps">
-    <div class="step">
-      <div class="step-header">
-        <div class="step-num" style="background:rgba(200,152,42,0.1);color:var(--gold)">✦</div>
-        <div><div class="step-title">Cara cakap dengan AI</div><div class="step-sub">Bahasa Melayu, English, atau campur — semua boleh</div></div>
-      </div>
-      <div class="step-body">
-        <p>Makin jelas permintaan awak, makin tepat AI buat. Contoh yang bagus:</p>
-        <div class="code-block">
-          <div><span class="comment">// Tukar tema</span></div>
-          <div>"Retheme untuk Hari Raya — warna hijau dan emas, rasa festive"</div>
-          <div style="height:8px"></div>
-          <div><span class="comment">// Ubah font</span></div>
-          <div>"font nama item kat bahagian pasta tu buat bold tapi jangan terlalu besar"</div>
-          <div style="height:8px"></div>
-          <div><span class="comment">// Tutup item via AI</span></div>
-          <div>"tandakan semua pasta sebagai sold out untuk hari ni"</div>
-          <div style="height:8px"></div>
-          <div><span class="comment">// Reset tema</span></div>
-          <div>"reset balik ke tema asal Beelal Coffee"</div>
-        </div>
-        <div class="callout tip">
-          <div class="callout-icon">💡</div>
-          <div class="callout-text">Kalau AI tanya soalan balik, dia tengah clarify details yang kurang. Jawab sahaja — AI akan terus buat kerja selepas tu.</div>
-        </div>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-header">
-        <div class="step-num" style="background:rgba(200,152,42,0.1);color:var(--gold)">⏳</div>
-        <div><div class="step-title">Tunggu semasa AI bekerja</div><div class="step-sub">Ada mesej "Membaca konteks..." bermakna AI tengah proses</div></div>
-      </div>
-      <div class="step-body">
-        <p>Biasanya ambil masa 3–8 saat. Normal — jangan tekan apa-apa semasa tunggu.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-header">
-        <div class="step-num" style="background:rgba(200,152,42,0.1);color:var(--gold)">💾</div>
-        <div><div class="step-title">Simpan kerja</div><div class="step-sub">"Save & Continue" atau "Save & Exit"</div></div>
-      </div>
-      <div class="step-body">
-        <p><strong>Save & Continue</strong> — simpan dan kekal dalam panel untuk buat perubahan lain.<br><strong>Save & Exit</strong> — simpan dan kunci panel. Buka semula kalau nak buat lebih.</p>
-        <div class="callout note">
-          <div class="callout-icon">📌</div>
-          <div class="callout-text">Lepas save, buka <strong>menu pelanggan</strong> dalam tab baru dan refresh untuk tengok perubahan.</div>
-        </div>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-header">
-        <div class="step-num" style="background:rgba(239,68,68,0.1);color:var(--red)">↩</div>
-        <div><div class="step-title">Tak suka hasilnya? Restore</div><div class="step-sub">Butang "Restore" sentiasa ada di bahagian atas AI Studio</div></div>
-      </div>
-      <div class="step-body">
-        <p>Tekan <strong>Restore</strong> → AI akan kembalikan ke versi sebelum perubahan terakhir. Reload menu pelanggan untuk tengok.</p>
-        <div class="callout warn">
-          <div class="callout-icon">⚠️</div>
-          <div class="callout-text">Restore hanya simpan <strong>1 versi kebelakang</strong>. Kalau buat banyak perubahan dan nak balik jauh, hubungi Rahman — dia boleh factory reset ke reka bentuk asal.</div>
-        </div>
-      </div>
-    </div>
-  </div>
+<h3>Changing the Theme with AI</h3>
+<div class="step"><div class="step-num">1</div><div class="step-body">Tap the <strong>AI Studio</strong> tab.</div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body">Type a request in plain language — for example: <em>"Make it look festive for Christmas — red and gold"</em> or <em>"Change the background to dark navy"</em>.</div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body">Tap <strong>Send</strong> and wait a few seconds. The AI will apply the changes and explain what it did.</div></div>
+<div class="step"><div class="step-num">4</div><div class="step-body">If you like the result, tap <strong>Save Theme</strong>. If not, tap <strong>Restore Last Saved</strong> to go back.</div></div>
+
+<h3>Quick Action Chips</h3>
+<p>Use the shortcut chips below the chat input for common actions:</p>
+<div style="margin-bottom:8px;">
+  <span class="badge purple">🌸 Seasonal Theme</span>
+  <span class="badge purple">🎉 Festive Theme</span>
+  <span class="badge purple">↩ Reset to Default</span>
+  <span class="badge purple">✏️ Change Slogan</span>
+  <span class="badge purple">🚫 Category Off</span>
+  <span class="badge purple">✅ All Available</span>
+</div>
+
+<h3>Upload a Design Template (ZIP)</h3>
+<p>If you have an HTML template ZIP file (e.g. from a design marketplace), you can upload it to extract its fonts and colour palette, then apply them to your menu.</p>
+<div class="step"><div class="step-num">1</div><div class="step-body">Scroll to <strong>Template Upload</strong> in AI Studio.</div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body">Tap <strong>Upload ZIP</strong> and select your file.</div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body">The extracted fonts and colours are shown. Choose which elements to update, then tap <strong>Apply Selected</strong>.</div></div>
+
+<h3>Factory Reset</h3>
+<p>To restore everything to the original theme set up by your developer, tap <strong>Factory Reset</strong> in AI Studio. This reverts to the master snapshot taken on first setup.</p>
 </section>
 
-<div class="section-divider"></div>
+<hr>
 
-<!-- ══════════════════════════════════════════ -->
-<!-- 06 — TEMPLATE -->
-<!-- ══════════════════════════════════════════ -->
-<section class="section" id="template">
-  <div class="section-label">06</div>
-  <h2>Muat Naik Template Baru</h2>
-  <p class="section-intro">Kalau awak jumpa tema yang cantik dari laman template, awak boleh "extract" warna dan fontnya untuk digunakan pada menu Beelal Coffee.</p>
+<!-- ── 6. SECURITY ────────────────────────────────────── -->
+<section id="security-tab">
+<h2>🔒 Security &amp; PINs</h2>
 
-  <div class="steps">
-    <div class="step">
-      <div class="step-header">
-        <div class="step-num" style="background:rgba(236,72,153,0.1);color:#ec4899">🌐</div>
-        <div><div class="step-title">Pilih laman template percuma</div><div class="step-sub">Laman yang disyorkan</div></div>
-      </div>
-      <div class="step-body">
-        <div class="path">
-          <div class="path-item"><div class="path-dot">1</div><div class="path-content"><div class="path-title">html5up.net</div><div class="path-desc">Koleksi template HTML percuma, reka bentuk moden dan bersih</div></div></div>
-          <div class="path-item"><div class="path-dot">2</div><div class="path-content"><div class="path-title">templatemo.com</div><div class="path-desc">Template percuma pelbagai gaya termasuk F&B dan kedai</div></div></div>
-          <div class="path-item"><div class="path-dot">3</div><div class="path-content"><div class="path-title">free-css.com</div><div class="path-desc">Koleksi besar template CSS percuma</div></div></div>
-        </div>
-        <div class="callout info">
-          <div class="callout-icon">ℹ️</div>
-          <div class="callout-text">Pilih template yang <strong>nampak reka letak cantik</strong> — awak hanya akan ambil warna dan font sahaja, bukan keseluruhan reka bentuk.</div>
-        </div>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-header">
-        <div class="step-num" style="background:rgba(236,72,153,0.1);color:#ec4899">📥</div>
-        <div><div class="step-title">Muat turun fail ZIP</div><div class="step-sub">Cari butang "Download" atau "Free Download"</div></div>
-      </div>
-      <div class="step-body">
-        <p>Fail yang dimuat turun akan berbentuk <code style="font-family:var(--mono);background:var(--bg3);padding:1px 6px;border-radius:4px;font-size:12px">template-name.zip</code>. Simpan dalam telefon atau komputer awak.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-header">
-        <div class="step-num" style="background:rgba(236,72,153,0.1);color:#ec4899">📦</div>
-        <div><div class="step-title">Upload ZIP dalam AI Studio</div><div class="step-sub">Drag & drop atau tap untuk pilih fail</div></div>
-      </div>
-      <div class="step-body">
-        <p>Sistem akan secara automatik cari fail CSS dalam ZIP dan extract:</p>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">
-          <span class="badge badge-blue">Font pairs</span>
-          <span class="badge badge-green">Warna palette</span>
-          <span class="badge badge-amber">Color codes</span>
-        </div>
-        <div class="callout note">
-          <div class="callout-icon">📌</div>
-          <div class="callout-text"><strong>Fail CSS yang dicari:</strong> style.css, main.css, atau app.css dalam ZIP. Jangan unzip dulu — upload terus fail ZIP yang dimuat turun.</div>
-        </div>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-header">
-        <div class="step-num" style="background:rgba(236,72,153,0.1);color:#ec4899">🎨</div>
-        <div><div class="step-title">Pilih font dan warna yang nak digunakan</div><div class="step-sub">Panel Font dan Panel Warna akan muncul</div></div>
-      </div>
-      <div class="step-body">
-        <p><strong>Panel Font</strong> — preview font dari template. Toggle mana-mana elemen nak guna font baru atau kekal font semasa.<br><br><strong>Panel Warna</strong> — swatch warna dari template ditunjukkan. Tap color picker untuk pilih warna tepat bagi setiap elemen.</p>
-        <p style="margin-top:10px">Tekan <strong>"Apply Font Changes"</strong> atau <strong>"Apply Color Changes"</strong> bila dah puas hati.</p>
-      </div>
-    </div>
-  </div>
+<h3>Change Owner PIN</h3>
+<div class="step"><div class="step-num">1</div><div class="step-body">Go to the <strong>Security</strong> tab.</div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body">Enter the new 4-digit PIN in both fields, then tap <strong>Save Owner PIN</strong>.</div></div>
+
+<div class="warn"><strong>Write it down.</strong> If you forget both the Owner PIN and Developer PIN, contact your developer — they can reset it via the Firebase database directly.</div>
+
+<h3>Change Developer PIN</h3>
+<p>Only the developer can change the Developer PIN. It is done from the <strong>Security</strong> tab when logged in with the Developer PIN.</p>
 </section>
 
-<div class="section-divider"></div>
+<hr>
 
-<!-- ══════════════════════════════════════════ -->
-<!-- 07 — DATABASE -->
-<!-- ══════════════════════════════════════════ -->
-<section class="section" id="database">
-  <div class="section-label">07</div>
-  <h2>Tentang Database</h2>
-  <p class="section-intro">Semua data menu, tetapan kedai, dan rekod pesanan disimpan dalam database yang selamat. Awak tak perlu sentuh database ini — semuanya diurus melalui panel admin.</p>
+<!-- ── 7. RECOVERY ────────────────────────────────────── -->
+<section id="recovery">
+<h2>🛟 Recovery &amp; Troubleshooting</h2>
 
-  <div class="db-tree">
-    <div class="db-root">beelal_coffee/</div>
-    <div class="db-indent">
-      <div><span class="db-key">config/</span> <span class="db-comment">← tetapan kedai dan tema</span></div>
-      <div class="db-indent2"><span class="db-key">store</span> <span class="db-comment">← nama, waktu, status buka/tutup</span></div>
-      <div class="db-indent2"><span class="db-key">theme</span> <span class="db-comment">← warna dan font aktif</span></div>
-      <div class="db-indent2"><span class="db-key">theme_last_saved</span> <span class="db-comment">← backup tema sebelum perubahan</span></div>
-      <div class="db-indent2"><span class="db-key">theme_master</span> <span class="db-comment">← reka bentuk asal (factory reset)</span></div>
-    </div>
-    <div class="db-indent">
-      <div><span class="db-key">menu/</span> <span class="db-comment">← semua item menu</span></div>
-      <div class="db-indent2"><span class="db-key">items</span> <span class="db-comment">← nama, harga, kategori, status</span></div>
-    </div>
-    <div class="db-indent">
-      <div><span class="db-key">orders/</span> <span class="db-comment">← rekod pesanan pelanggan</span></div>
-      <div class="db-indent2"><span class="db-key">ord_xxx</span> <span class="db-comment">← nama, item, jumlah, masa</span></div>
-    </div>
-    <div class="db-indent">
-      <div><span class="db-key">error_log/</span> <span class="db-comment">← log ralat teknikal (untuk Rahman)</span></div>
-    </div>
+<div class="card">
+  <div class="card-head">
+    <div class="card-icon" style="background:var(--amber2);">🔑</div>
+    <div><div class="card-title">Forgotten Owner PIN</div></div>
   </div>
+  <p style="margin:0;font-size:14px;color:var(--text2);">Log in with the Developer PIN → <strong>Security</strong> tab → reset the Owner PIN.</p>
+</div>
 
-  <div class="callout warn" style="margin-top:16px">
-    <div class="callout-icon">⚠️</div>
-    <div class="callout-text"><strong>Pesanan ujian dalam Orders tab</strong> — awak mungkin nampak beberapa rekod pesanan yang dah ada dalam tab Orders. Ini adalah pesanan ujian semasa pembangunan sistem. <strong>Abaikan sahaja buat masa ini</strong> — Rahman akan bersihkan dalam kemaskini akan datang. Pesanan sebenar dari pelanggan akan mula masuk dari sekarang.</div>
+<div class="card">
+  <div class="card-head">
+    <div class="card-icon" style="background:var(--red2);">🎨</div>
+    <div><div class="card-title">Theme Looks Wrong / Broken</div></div>
   </div>
+  <p style="margin:0;font-size:14px;color:var(--text2);">Log in with Developer PIN → <strong>AI Studio</strong> → tap <strong>Factory Reset</strong>. This restores the original theme.</p>
+</div>
 
-  <div class="callout info" style="margin-top:10px">
-    <div class="callout-icon">ℹ️</div>
-    <div class="callout-text"><strong>Kalau panel admin rosak atau ada masalah</strong> — hubungi Rahman. Dia boleh push versi baru panel tanpa menjejaskan data awak. Semua menu, pesanan, dan tetapan selamat dalam database yang berasingan dari fail panel.</div>
+<div class="card">
+  <div class="card-head">
+    <div class="card-icon" style="background:var(--blue2);">🌐</div>
+    <div><div class="card-title">Page Not Loading / Network Error</div></div>
   </div>
+  <p style="margin:0;font-size:14px;color:var(--text2);">Check your internet connection. The menu and admin panel require a connection to Firebase. If the problem persists, contact your developer.</p>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <div class="card-icon" style="background:var(--purple2);">🐛</div>
+    <div><div class="card-title">Viewing Error Logs</div></div>
+  </div>
+  <p style="margin:0;font-size:14px;color:var(--text2);">Log in with Developer PIN → <strong>Dev</strong> tab → scroll to <strong>Error Log</strong>. The last 20 errors are shown with timestamps and details.</p>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <div class="card-icon" style="background:var(--green2);">🔄</div>
+    <div><div class="card-title">Redeploying / Updating the App</div></div>
+  </div>
+  <p style="margin:0;font-size:14px;color:var(--text2);">Push updated files to the GitHub repository. Cloudflare deploys automatically in ~30 seconds. Database data is unaffected by redeployments.</p>
+</div>
+
+<hr>
+
+<p style="font-size:13px;color:var(--text3);text-align:center;">Need help? Contact your developer.</p>
 </section>
 
-<div class="section-divider"></div>
-
-<!-- QUICK REFERENCE -->
-<section class="section">
-  <div class="section-label">Rujukan Pantas</div>
-  <h2>Apa nak buat bila...</h2>
-  <div class="steps">
-    <div class="step">
-      <div class="step-header"><div class="step-num green">?</div><div><div class="step-title">Nak buka kedai pagi</div></div></div>
-      <div class="step-body"><p>Admin → Store → Toggle "Store is Open" → On ✅</p></div>
-    </div>
-    <div class="step">
-      <div class="step-header"><div class="step-num green">?</div><div><div class="step-title">Item dah habis hari ni</div></div></div>
-      <div class="step-body"><p>Admin → Menu → cari item → tekan "Sold Out" 🔴</p></div>
-    </div>
-    <div class="step">
-      <div class="step-header"><div class="step-num green">?</div><div><div class="step-title">Nak tukar harga</div></div></div>
-      <div class="step-body"><p>Admin → Menu → "Edit" pada item → ubah harga → Save Changes ✅</p></div>
-    </div>
-    <div class="step">
-      <div class="step-header"><div class="step-num green">?</div><div><div class="step-title">Nak retheme Raya</div></div></div>
-      <div class="step-body"><p>Admin → AI Studio → chip "🌙 Raya Theme" atau taip sendiri → tunggu AI buat kerja → Save & Continue ✅</p></div>
-    </div>
-    <div class="step">
-      <div class="step-header"><div class="step-num green">?</div><div><div class="step-title">Tak suka perubahan AI</div></div></div>
-      <div class="step-body"><p>Admin → AI Studio → butang "Restore" → reload menu pelanggan ↩</p></div>
-    </div>
-    <div class="step">
-      <div class="step-header"><div class="step-num green">?</div><div><div class="step-title">Lupa PIN</div></div></div>
-      <div class="step-body"><p>Hubungi Rahman — dia boleh reset PIN dari hujungnya. ☎️</p></div>
-    </div>
-    <div class="step">
-      <div class="step-header"><div class="step-num green">?</div><div><div class="step-title">Panel ada masalah teknikal</div></div></div>
-      <div class="step-body"><p>Tekan OK pada mesej ralat → tutup browser → buka semula. Kalau masih ada masalah, hubungi Rahman. 🔧</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer class="footer">
-  <div class="footer-inner">
-    <div class="footer-brand">Beelal <span>Coffee</span> · Admin System</div>
-    <div class="footer-note">Dibangunkan oleh Rahman · Kemaskini akan datang melalui URL yang sama</div>
-  </div>
-</footer>
-
-</div><!-- end wrap -->
-
-<script>
-// Smooth scroll for TOC
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEventListener('click', e => {
-    e.preventDefault();
-    document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior:'smooth' });
-  });
-});
-
-// Highlight active TOC item on scroll
-const sections = document.querySelectorAll('section[id]');
-const tocItems  = document.querySelectorAll('.toc-item');
-const obs = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      tocItems.forEach(t => t.style.color = '');
-      const active = document.querySelector(`.toc-item[href="#${entry.target.id}"]`);
-      if (active) active.style.color = '#ededed';
-    }
-  });
-}, { rootMargin:'-30% 0px -60% 0px' });
-sections.forEach(s => obs.observe(s));
-</script>
 </body>
 </html>
