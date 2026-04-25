@@ -1438,10 +1438,13 @@ async function sendOrder() {
   if (note) msg += `\n\n📝 ${note}`;
   msg += `\n\n_via ${APP_CONFIG.brand.appName} menu_`;
 
-  // Log to Firebase (ring buffer)
-  await logOrder({ name, items: cart.map(i => ({ name:i.name, size:i.size, price:i.price, addons:i.addons })), total, note, ts: Date.now() });
-
+  // Open WhatsApp synchronously while still inside the click handler —
+  // mobile browsers (iOS Safari, Android Chrome) block window.open()
+  // called after any await, treating it as an unsolicited popup.
   window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+
+  // Log to Firebase in the background — no need to block on this.
+  logOrder({ name, items: cart.map(i => ({ name:i.name, size:i.size, price:i.price, addons:i.addons })), total, note, ts: Date.now() });
 }
 
 async function logOrder(order) {
