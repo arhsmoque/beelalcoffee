@@ -1,6 +1,6 @@
 {
   // Change "name" to match your Cloudflare Workers project name
-  "name": "my-coffee-shop",
+  "name": "the-rizz",
   "compatibility_date": "2026-04-14",
   "observability": {
     "enabled": true
