@@ -880,12 +880,13 @@ const CUR     = APP_CONFIG.store.currency;
 // ════════════════════════════════════════════════════════════
 const DEFAULT_CONFIG = {
   store: {
-    name:     APP_CONFIG.store.name,
-    slogan:   APP_CONFIG.store.slogan,
-    phone:    APP_CONFIG.store.phone,
-    hours:    APP_CONFIG.store.hours,
-    isOpen:   true,
-    logo_url: ''
+    name:       APP_CONFIG.store.name,
+    slogan:     APP_CONFIG.store.slogan,
+    phone:      APP_CONFIG.store.phone,
+    hours:      APP_CONFIG.store.hours,
+    isOpen:     true,
+    logo_url:   '',
+    sizeLegend: APP_CONFIG.store.sizeLegend,
   },
   theme: APP_CONFIG.defaultTheme
 };
@@ -1074,7 +1075,7 @@ function renderMenu() {
       sec.innerHTML = `
         <div class="section-label">${cat.emoji} ${cat.label}</div>
         <div class="section-title">${cat.label}</div>
-        <div class="size-legend">${APP_CONFIG.store.sizeLegend.map(s=>`<div class="size-chip">${s}</div>`).join('')}</div>`;
+        <div class="size-legend">${storeConfig.sizeLegend.map(s=>`<div class="size-chip">${s}</div>`).join('')}</div>`;
       const list = document.createElement('div');
       list.className = 'menu-list';
       items.forEach(item => list.appendChild(makeCard(item)));
@@ -1222,9 +1223,14 @@ function handleAdd(e, itemId) {
   const hasAddons = item.addons && item.addons.length > 0;
   if (isDrink) {
     const sizes = [];
-    if (item.hot    != null) sizes.push({ label:'Hot',    oz: item.hot_oz    || '8oz',  price: item.hot });
-    if (item.cold   != null) sizes.push({ label:'Cold',   oz: item.cold_oz   || '12oz', price: item.cold });
-    if (item.frappe != null) sizes.push({ label:'Frappé', oz: item.frappe_oz || '16oz', price: item.frappe });
+    const leg = storeConfig.sizeLegend || [];
+    const lastToken = s => (s || '').split(' ').pop();
+    const defHotOz    = item.hot_oz    || lastToken(leg[0]) || '8oz';
+    const defColdOz   = item.cold_oz   || lastToken(leg[1]) || '12oz';
+    const defFrappeOz = item.frappe_oz || lastToken(leg[2]) || '16oz';
+    if (item.hot    != null) sizes.push({ label:'Hot',    oz: defHotOz,    price: item.hot });
+    if (item.cold   != null) sizes.push({ label:'Cold',   oz: defColdOz,   price: item.cold });
+    if (item.frappe != null) sizes.push({ label:'Frappé', oz: defFrappeOz, price: item.frappe });
     if (sizes.length === 1) {
       if (hasAddons) openAddonsSheet(item, sizes[0].label, sizes[0].oz, sizes[0].price);
       else           addToCart(item, sizes[0].label, sizes[0].oz, sizes[0].price, []);
